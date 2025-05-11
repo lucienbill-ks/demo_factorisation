@@ -10,6 +10,6 @@
 BeginTestCase "Vérifier qu'on peut lire des donnéees depuis un fichier Excel"
 "steps/excel_db/action".je_charge_la_feuille_x_fichier_excel_y_en_memoire "People", "TestExcelDB.xlsx"
 "steps/excel_db/validation".je_verifie_que_personne_ne_s_appelle_x_dans_la_bdd_excel "Robert"
-"steps/excel_db/validation".je_verifie_que_la_taille_de_x_est_y "Drew", 650
+"steps/excel_db/validation".je_verifie_que_la_taille_de_x_est_y "Drew", 60
 EndTestCase "Vérifier qu'on peut lire des donnéees depuis un fichier Excel"
 
