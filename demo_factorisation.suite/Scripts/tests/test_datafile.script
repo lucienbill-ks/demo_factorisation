@@ -1,0 +1,15 @@
+﻿// Instructions qui montrent qu'on peut variabiliser, lire à partir d'Excel
+// Pour plus d'exempels de code qui exploitent Excel, voir : 
+// https://github.com/keysight-eggplant/SenseTalk-Eggspert-Sessions/tree/master/230607-excel_databases
+
+// Scénario : 
+// Ouvrir le fichier TestExcelDB.xlsx et le charger en mémoire
+// Vérifier que personne ne s'appelle Robert
+// Vérifier que la taille de "Drew" est 60
+
+BeginTestCase "Vérifier qu'on peut lire des donnéees depuis un fichier Excel"
+"steps/excel_db/action".je_charge_la_feuille_x_fichier_excel_y_en_memoire "People", "TestExcelDB.xlsx"
+"steps/excel_db/validation".je_verifie_que_personne_ne_s_appelle_x_dans_la_bdd_excel "Robert"
+"steps/excel_db/validation".je_verifie_que_la_taille_de_x_est_y "Drew", 650
+EndTestCase "Vérifier qu'on peut lire des donnéees depuis un fichier Excel"
+

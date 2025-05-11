@@ -1,0 +1,39 @@
+﻿//Fichier pour les fonctions publiques de type validation
+to je_verifie_que_personne_ne_s_appelle_x_dans_la_bdd_excel with myname:empty
+	log "vérifier que personne n'a pour nom '" & myname & "' dans la BDD Excel en mémoire ..."
+	set mydata to "steps/excel_db/_lib"._get_inmemory_excel_db
+	put the records of mydata where name is myname into myRecords
+	
+	if myRecords equals [] then
+		LogSuccess "vérifier que personne n'a pour nom '" & myname & "' dans la BDD Excel en mémoire : OK"
+	else
+		LogError "Attendu : personne n'a pour nom '" & myname & "' dans la BDD Excel en mémoire. Constaté : ces personnes sont dans le fichier Excel :" && myRecords
+	end if
+	
+end je_verifie_que_personne_ne_s_appelle_x_dans_la_bdd_excel
+
+to je_verifie_que_la_taille_de_x_est_y with myname:empty, myheight:empty
+	log "vérifier que la personne '" & myname & "' (dans la BDD Excel en mémoire) a pour taille"&& myheight &&"..."
+	if myname is empty then Throw "Parammètre obligatoire maquant", "Le paramètre myname est obligatoire - nom de la personne dont on veut vérifier la taille"
+	
+	set mydata to "steps/excel_db/_lib"._get_inmemory_excel_db
+	put the records of mydata where name is myname into myRecords
+	
+	if myRecords equals [] then
+		logError "Aucune personne trouvée pour le nom '" &myname&"'"
+		return
+	end if
+	
+	if the number of items in myRecords is greater than 1 then
+		logError "Plusieurs personnes ont le meme nom :" &&myRecords
+		return
+	end if
+	
+	set actualheight to the height of the first item of myRecords
+	if actualheight equals myheight then
+		LogSuccess "vérifier que la personne '" & myname & "' (dans la BDD Excel en mémoire) a pour taille"&& myheight &&"OK"
+	else
+		logError "Taille attendue pour la personne '" & myname & "' :"&& myheight &&"; taille lue :" && actualheight
+	end if		
+	
+end je_verifie_que_la_taille_de_x_est_y

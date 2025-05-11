@@ -1,0 +1,63 @@
+﻿//Fichier pour les fonctions publiques de type action
+
+to je_vais_sur_github_sans_me_connecter_a_un_compte myOptions:{}
+	log "Aller sur github, s'assurer qu'on n'est pas connecté à un compte : ..."
+	"steps/github/_lib"._ensure_disconnection {nouvelleSessionNavigateur:true}
+	logSuccess "Aller sur github, s'assurer qu'on n'est pas connecté à un compte : OK"
+end je_vais_sur_github_sans_me_connecter_a_un_compte
+
+to je_vais_sur_le_repo_de_test with myOptions:{}
+	// === Valeurs et comportement par défaut ===
+	// URL du repo
+	if myOptions.url_repo is empty then
+		set myOptions.url_repo to "steps/github/_lib"._get_default_test_repo
+	end if
+	// ============================
+	
+	log "Visiter le repo" && myOptions.url_repo && " ..."
+	
+	TypeText f6 // revient à cliquer dans la barre d'URL
+	wait 0.5
+	typeText myOptions.url_repo, returnkey
+	wait 2
+	
+	set validationStr to myOptions.url_repo
+	delete "https://github.com/" from validationStr
+	
+	waitfor 10, text:validationStr, SearchRectangle: [0,93,RemoteScreenSize().x, 300]
+	
+	logSuccess "Visiter le repo" && myOptions.url_repo && ": OK"
+end je_vais_sur_le_repo_de_test
+
+to je_tente_d_ouvrir_vs_code_online
+	log "tenter d'ouvrir VS code online ..."
+	typeText "."
+	wait 2
+	logSuccess "tenter d'ouvrir VS code online OK"
+end je_tente_d_ouvrir_vs_code_online
+
+to je_m_authentifie_a_github
+	log "S'authentifier à GitHub ..."
+	Click text:"Sign in", waitFor:3
+	wait 1
+	WaitFor 10, text:"Username or email address", SearchRectangle:empty
+	
+	"steps/keepass/action".j_ouvre_le_coffree_keepass
+	"steps/keepass/action".j_utilise_autotype
+	WaitFor 10, text:"Two-factor authentication"
+	"steps/keepass/action".je_copie_colle_le_code_otp_de_l_entree_selectionnee
+	wait 5
+	WaitFor 30, text:"Pull requests"
+	if ImageFound(text:"Sign in", waitFor:2) then
+		Throw "Echec du login à GitHub", "L'authentification n'a pas fonctionné"
+	end if
+	
+	
+	logSuccess "S'authentifier à GitHub : OK"
+end je_m_authentifie_a_github
+
+to je_me_deconnecte_de_github
+	log "Se déconnecter de GitHub : ..."
+	"steps/github/_lib"._ensure_disconnection {nouvelleSessionNavigateur:false}
+	logSuccess "Se déconnecter de GitHub : OK"
+end je_me_deconnecte_de_github

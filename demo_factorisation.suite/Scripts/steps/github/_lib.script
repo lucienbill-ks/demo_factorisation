@@ -1,0 +1,45 @@
+﻿//Fichier pour les fonctions internes
+
+to _get_default_test_repo
+	return "https://github.com/lucienbill/obsidian-daily-notes"
+end _get_default_test_repo
+
+to _ensure_disconnection with myOptions:{}
+	log "s'assurer d'etre sur github, déconnecté de tout compte ..."
+	// === Valeurs et comportement par défaut ===
+	// Ouvrir une nouvelle session de navigateur
+	if myOptions.nouvelleSessionNavigateur is empty then
+		set myOptions.nouvelleSessionNavigateur to false
+	end if
+	
+	set url_github to "https://github.com/logout"
+	
+	// ============================
+	if myOptions.nouvelleSessionNavigateur is true then
+		"steps/chrome_browser/action".j_ouvre_une_nouvelle_session_chrome {startUrl: url_github}
+	else
+		// Sélectionner la barre d'URL
+		typeText F6
+		wait 0.5
+		typeText url_github, returnKey
+	end if
+	
+	wait 4
+	
+	// S'assurer qu'on est sur github, pas logué
+	repeat 10 times
+		if ImageFound(text:"Select account to sign out", waitFor:0) then
+			click text:"Sign out from all accounts", waitFor:0
+			wait 2
+		end if
+		
+		if ImageFound(text:"Sign in", waitFor:0) then
+			logSuccess "s'assurer d'etre sur github, déconnecté de tout compte : OK"
+			return
+		end if
+		
+		wait 2
+	end repeat
+	
+	Throw "Erreur d'accès ou de déconnexion à github", "erreur lors de l'accès à gitHub sans compte logué, ou de la déconnexion"
+end _ensure_disconnection

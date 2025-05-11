@@ -1,0 +1,64 @@
+﻿//Fichier pour les fonctions publiques de type action
+
+to j_ouvre_le_coffree_keepass with vaultPath:"C:\Users\lucibill\OneDrive - Keysight Technologies\Documents\Keepass\test-EPF.kdbx"
+	log "Ouverture du coffre Keepass" && vaultPath && ": ..."
+	set myProgram to <<"C:\Program Files\KeePass Password Safe 2\KeePass.exe">> 
+	"steps/common/action".j_execute_une_commande_windows_r myProgram && quote & vaultPath & quote
+	
+	WaitFor 8.0, "apps/keepass/masterpassword_input_logo"
+	wait 0.5
+	
+	set cryptKey to "steps/common/_lib"._get_cryptkey
+	set encodedSecret to "TZCSfHeXQARHBS[WMULXHD\MOUJFSZbJEN@ePLGgUJDX>J>IQFRQ=KPVVWWXW\Jd"
+	
+	TypeHiddenText DecodeText(encodedSecret, cryptKey)
+	
+	typeText  returnkey
+	
+	WaitFor 25, "apps/keepass/keepasslogo_topmenu"
+	WaitFor 20, "apps/keepass/icon_lockworkspace"
+	
+	logSuccess "Ouverture du coffre Keepass" && vaultPath && ": OK"
+	
+end j_ouvre_le_coffree_keepass
+
+to j_utilise_autotype with myEntry:"GitHub with OTP"
+	log "Trouver l'entrée" && myEntry && "dans Keepass et utiliser l'auto-type ..."
+	Click text:myEntry, waitFor:2
+	wait 0.5
+	TypeText controlKey, "v"
+	wait 5	
+	logSuccess "Trouver l'entrée" && myEntry && "dans Keepass et utiliser l'auto-type : OK"
+end j_utilise_autotype
+
+to je_copie_colle_le_code_otp_de_l_entree_selectionnee
+	log "Copier/coller le jeton OTP de l'entrée Keepass sélectionnée ..."
+	TypeText altKey, tabKey
+	wait 2
+	
+	TypeText controlKey, "t"
+	
+	
+	TypeText altKey, tabKey
+	TypeText shiftKey, insertkey
+	TypeText returnKey
+	
+	logSuccess "Copier/coller le jeton OTP de l'entrée Keepass sélectionnée : OK"
+end je_copie_colle_le_code_otp_de_l_entree_selectionnee
+
+to je_ferme_keepass
+	log "fermer Keepass ..."
+	typeText altKey, f4
+	wait 1
+	repeat 5 times
+		if not ImageFound(imageName:"apps/keepass/icon_taskbar", waitFor:2) then
+			LogSuccess "fermer Keepass : OK"
+			return
+		end if
+		
+		wait 2
+	end repeat
+	
+	Throw "Quitter Keepass : échec", "L'icone de Keepass est encore présente dans la barre des taches"
+	
+end je_ferme_keepass

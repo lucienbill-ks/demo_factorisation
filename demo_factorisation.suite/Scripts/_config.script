@@ -1,0 +1,10 @@
+﻿// Penser à configurer la suite pour que ce script s'exécute avant chaque exécition
+// de script ou de portion de code : 
+// Dans la suite : cliquer sur "Settings..." (en bas à gauche)
+// Puis cocher ces cases :
+//   - "Before each run, execute this script:"
+//   - "Before running a selection, execute:"
+// Dans le dropdownmenu de ces éléments, sélectionner "_config.script"
+
+set the sendShiftForCaps to no // for azerty keyboards
+set the ScriptLogging to yes

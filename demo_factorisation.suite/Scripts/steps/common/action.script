@@ -1,0 +1,73 @@
+﻿//Fichier pour les fonctions publiques de type action
+to je_verifie_que_le_SUT_est_disponible
+	log "vérifie que le SUT est bien pret pour recevoir des interactions ..."
+	// note : nécessaire pour DAI, qui ouvre/ferme le SUT pour chaque test
+	set max_wait_time to 120 // 2 minutes
+	set wait_interval to 5
+	set max_repeats to round(max_wait_time/wait_interval)
+	
+	repeat max_repeats times
+		if imagefound(imagename:"apps/windows/windows_logo_taskbar", waitfor:0)
+			exit repeat
+		end if
+		wait wait_interval
+	end repeat
+	if imagefound(imagename:"apps/windows/cross_error_message", waitfor:20) then
+		typeText returnkey
+		wait 0.5
+	end if
+	
+	logSuccess "vérifie que le SUT est bien pret pour recevoir des interactions OK"
+end je_verifie_que_le_SUT_est_disponible
+
+to j_execute_une_commande_windows_r with myCmd
+	log "Utiliser Windows + r pour lancer la commande '" & myCmd & "' ..."
+	TypeText windowsKey, "r"
+	wait 0.5
+	typeText myCmd, returnKey
+	wait 0.5
+	logSuccess "Utiliser Windows + r pour lancer la commande '" & myCmd & "' : OK"
+end j_execute_une_commande_windows_r
+
+je_lance_le_navigateur_x "chrooome"
+
+to je_lance_le_navigateur_x with myBrowser, myOptions:{}
+	// initialisation de la liste de navigateurs reconnus
+	set browserList to {}
+
+	set chromeName to "chrome"
+	set edgeName to "edge"
+	
+	set browserList.(chromeName) to "chrome.exe"
+	set browserList.(edgeName) to "msedge.exe"
+	
+	// Controle des paramètres
+	set browserExecName to browserList.(myBrowser) 
+	if browserExecName is empty then Throw "Navigateur inconnu", "Le navigateur '"&myBrowser&"' ne fait pas partie de la liste des navigateurs connus " && browserList
+	
+	// Valeurs par défauts
+	if myOptions.startUrl is empty then
+		set myOptions.startUrl to "about:blank"
+	end if
+	if myOptions.startMaximized is empty then
+		set myOptions.startMaximized to true
+	end if
+	if myOptions.incognito is empty then
+		set myOptions.incognito to false
+	end if
+	
+	// Chrome et Edge (meme moteur)
+	if myBrowser is in [chromeName, edgeName] then
+		set myCmd to browserList.(myBrowser) && myOptions.startUrl
+		if myOptions.startMaximized is true then
+			set myCmd to myCmd && "--start-maximized"
+		end if
+		if myOptions.incognito is true then
+			set myCmd to myCmd && "--incognito"
+		end if
+	end if
+	
+	j_execute_une_commande_windows_r myCmd
+	wait 2
+	waitfor 30, "browser/"&myBrowser&"/reloadIcon"
+end je_lance_le_navigateur_x

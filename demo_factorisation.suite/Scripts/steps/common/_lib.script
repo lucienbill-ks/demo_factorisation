@@ -1,0 +1,23 @@
+﻿//Fichier pour les fonctions internes
+
+
+(*
+Note : la logique de ces fonctions est "parse, don't validate"
+https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/
+En bref : je fais en sorte que mes fautes de frappes dans le code déclenchent des erreurs
+tot, pour faciliter le déboggage.
+*)
+
+to _check_value_x_is_in_list_y with myValue:"", myList:[]
+	if myValue is not in myList then Throw "Valeur inconnue", "la valeur '" & myValue & "' ne fait pas partie de la liste" && myList
+	return myValue
+end _check_value_x_is_in_list_y
+
+to _get_cryptkey
+	set secretKey to env("EPF_SECRET_KEY") // Variable d'environnement système
+	if secretKey is empty then
+		Throw "Variable d'environnement manquante", "La variable d'environnement système 'EPF_SECRET_KEY' ne doit pas etre vide"
+	end if
+	
+	return secretKey
+end _get_cryptkey

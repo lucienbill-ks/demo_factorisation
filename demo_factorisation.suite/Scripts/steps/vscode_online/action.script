@@ -1,0 +1,47 @@
+﻿to je_cree_un_nouveau_fichier
+	log "créer un nouveau fichier dans VS Code Online ..."
+	wait 3
+	MoveTo text:"en-US", waitFor:30
+	Click (Image:"apps/vscode_online/create_new_file", WaitFor:5)
+	wait 2
+	typeText "steps/vscode_online/_lib"._get_default_newfile_name, returnkey
+	wait 2
+	typeText "this is a new file!", returnkey
+	WaitFor 4, text:"this is a new file!"
+	LogSuccess "créer un nouveau fichier dans VS Code Online  : OK"
+	
+end je_cree_un_nouveau_fichier
+
+to je_supprime_le_nouveau_fichier
+	log "Supprimer le nouveau fichier dans VS Code Online ..."
+	RightClick text:"steps/vscode_online/_lib"._get_default_newfile_name, waitFor:2, SearchRectangle:[0,92,350, RemoteScreenSize().y]
+	wait 1
+	click text:"Delete Permanently", waitfor: 5, SearchRectangle:empty
+	wait 1
+	WaitFor 10, text:"Are you sure you want to permanently delete"
+	typeText returnkey	
+	LogSuccess "Supprimer le nouveau fichier dans VS Code Online : OK"
+end je_supprime_le_nouveau_fichier
+
+to je_ferme_vscode_online
+	log "fermer VS code online ..."
+	typeText controlKey, "w"
+	
+	if ImageFound(text:"Leave site?", waitFor:4) then
+		typeText returnKey
+	end if
+	
+	set isExitOK to false
+	Repeat 5 times
+		if not ImageFound(imageName:"apps/vscode_online/topleft_logo.png", waitFor:0) then
+			set isExitOK to true
+			exit repeat
+		end if
+		
+		wait 2
+	End repeat
+	
+	if not isExitOK then Throw "Impossible de quitter VS Code Online", "L'opération a échoué"
+	
+	logSuccess "fermer VS code online : OK"
+end je_ferme_vscode_online

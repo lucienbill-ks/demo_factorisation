@@ -1,0 +1,47 @@
+﻿// But du scénario : vérifier qu'on peut éditer du code d'un repo GitHub
+// Avec une version web de Visual Studio Code
+
+// Aller sur GitHub, sans etre connecté à un compte
+// Aller sur le repo de test
+// Tenter d'ouvrir VS Code dans le navigateur : ne doit pas etre possible
+
+// S'authentifier sur GitHub (compte avec MFA)
+//    Note : Eggplant va ouvrir Keepass 
+// Depuis la page d'accueil du repo, ouvrir VS Code online
+// Créer un fichier, y entrer du texte, puis le supprimer
+
+// Fermer VS Code online
+// Se déconnecter de GitHub
+// Fermer GitHub
+
+// Ci dessous, le script de test qui correspond à ces actions :
+BeginTestCase "Tenter d'ouvrir VS code online sans etre authentifié à GitHub"
+"steps/common/action".je_verifie_que_le_SUT_est_disponible
+"steps/github/action".je_vais_sur_github_sans_me_connecter_a_un_compte
+"steps/github/action".je_vais_sur_le_repo_de_test
+"steps/github/action".je_tente_d_ouvrir_vs_code_online
+"steps/github/validation".je_verifie_que_vscode_online_ne_s_ouvre_pas
+
+EndTestCase "Tenter d'ouvrir VS code online sans etre authentifié à GitHub"
+
+//-----
+
+BeginTestCase "En étant authentifié à GitHub, ouvrir VS code online"
+"steps/github/action".je_m_authentifie_a_github
+"steps/github/action".je_tente_d_ouvrir_vs_code_online
+"steps/vscode_online/validation".je_verifie_que_vscode_online_est_ouvert
+"steps/vscode_online/action".je_cree_un_nouveau_fichier
+"steps/vscode_online/action".je_supprime_le_nouveau_fichier
+EndTestCase "En étant authentifié à GitHub, ouvrir VS code online"
+
+//-----
+
+BeginTestCase "Tout fermer"
+"steps/vscode_online/action".je_ferme_vscode_online
+"steps/github/action".je_me_deconnecte_de_github
+"steps/chrome_browser/action".je_ferme_chrome
+"steps/keepass/action".je_ferme_keepass
+EndTestCase "Tout fermer"
+
+
+
