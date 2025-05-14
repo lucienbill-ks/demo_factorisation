@@ -1,7 +1,7 @@
-﻿to _set_inmemory_excel_db with mydata
+﻿to _set_inmemory_excel_table with mydata
 	set global g_excelsheet to mydata
-end _set_inmemory_excel_db
+end _set_inmemory_excel_table
 
-to _get_inmemory_excel_db
+to _get_inmemory_excel_table
 	return global g_excelsheet
-end _get_inmemory_excel_db
+end to _get_inmemory_excel_table
