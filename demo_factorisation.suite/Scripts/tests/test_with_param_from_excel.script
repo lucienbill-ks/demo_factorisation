@@ -1,0 +1,17 @@
+﻿BeginTestCase "Lancer le même script, mais avec des paramètres différents lus dans Excel"
+"steps/excel_db/action".je_charge_la_feuille_x_fichier_excel_y_en_memoire "People", "TestExcelDB.xlsx"
+
+// Récupérer toutes les lignes
+set mydata to the records of "steps/excel_db/_lib"._get_inmemory_excel_db
+// Pour chaque ligne
+Repeat with each item myline of mydata
+	// Appeler un script de test, en lui passant en paramètre le nom de la personne
+	set myParam to the name of myline
+	// set myParam to myline.name // A le meme effet que la ligne precedente
+	// set myParam to myline.("name") // A le meme effet que la ligne precedente
+	
+	RunWithNewResults "tests/group_of_tests/test_001", myparam
+	
+End repeat
+
+EndTestCase "Lancer le même script, mais avec des paramètres différents lus dans Excel"

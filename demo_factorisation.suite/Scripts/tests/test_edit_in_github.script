@@ -42,6 +42,3 @@ BeginTestCase "Tout fermer"
 "steps/chrome_browser/action".je_ferme_chrome
 "steps/keepass/action".je_ferme_keepass
 EndTestCase "Tout fermer"
-
-
-

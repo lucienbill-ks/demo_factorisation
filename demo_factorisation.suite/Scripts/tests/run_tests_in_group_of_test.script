@@ -1,0 +1,2 @@
+﻿// But du script : exécuter tous les tests d'un dossier 
+"steps/common/autre".j_execute_tous_les_test_du_dossier_x  "tests/group_of_tests"

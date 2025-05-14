@@ -1,0 +1,3 @@
+params myparam:"default_value"
+log "this is a fake test, number 003"
+log "the value of myparam is" && myparam
