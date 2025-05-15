@@ -15,6 +15,11 @@ end _check_value_x_is_in_list_y
 
 to _get_cryptkey
 	set secretKey to env("EPF_SECRET_KEY") // Variable d'environnement système
+	// Alternative possible : ppasser par le gestionnaire de mot de passe réseau de Windows
+	
+	// // SetVaultValue "EPF_SECRET_KEY", "this is a super secret key, don't leav it here or it will leak"	
+	// set secretKey to  GetVaultValue("EPF_SECRET_KEY")
+	
 	if secretKey is empty then
 		Throw "Variable d'environnement manquante", "La variable d'environnement système 'EPF_SECRET_KEY' ne doit pas etre vide"
 	end if

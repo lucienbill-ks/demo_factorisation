@@ -38,8 +38,11 @@ to je_copie_colle_le_code_otp_de_l_entree_selectionnee
 	
 	TypeText controlKey, "t"
 	
+	wait 0.5
+	
 	
 	TypeText altKey, tabKey
+	wait 1
 	TypeText shiftKey, insertkey
 	TypeText returnKey
 	

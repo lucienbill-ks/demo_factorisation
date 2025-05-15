@@ -7,12 +7,17 @@ to j_execute_tous_les_test_du_dossier_x with mondossier:empty
 	
 	set listOfTestsToRun to files of scriptDirPath
 	
+	if the number of items of listOfTestsToRun is 0 then
+		Throw "Aucun test à exécuter", "Aucun script n'a été trouvé dans le dossier" && mondossier
+		
+	end if
+	
 	Repeat with each item myTest of listOfTestsToRun
 		RunWithNewResults mondossier & "/" & myTest
 		
 		// if the result's status is "failure" then
-			// LogError "test failed. Performing cleanup action"
-			// some actions
+		// LogError "test failed. Performing cleanup action"
+		// some actions
 		// end if	
 	End repeat
 	

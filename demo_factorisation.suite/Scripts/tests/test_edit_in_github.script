@@ -8,7 +8,7 @@
 // S'authentifier sur GitHub (compte avec MFA)
 //    Note : Eggplant va ouvrir Keepass 
 // Depuis la page d'accueil du repo, ouvrir VS Code online
-// Créer un fichier, y entrer du texte, puis le supprimer
+// Créer un fichier, y entrer du texte, puis supprimer le fichier
 
 // Fermer VS Code online
 // Se déconnecter de GitHub
@@ -42,3 +42,4 @@ BeginTestCase "Tout fermer"
 "steps/chrome_browser/action".je_ferme_chrome
 "steps/keepass/action".je_ferme_keepass
 EndTestCase "Tout fermer"
+

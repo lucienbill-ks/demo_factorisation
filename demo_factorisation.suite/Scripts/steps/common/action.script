@@ -6,16 +6,23 @@ to je_verifie_que_le_SUT_est_disponible
 	set wait_interval to 5
 	set max_repeats to round(max_wait_time/wait_interval)
 	
+	set is_sut_open to false
 	repeat max_repeats times
 		if imagefound(imagename:"apps/windows/windows_logo_taskbar", waitfor:0)
+			set is_sut_open to true
 			exit repeat
 		end if
 		wait wait_interval
 	end repeat
+	
+	if not is_sut_open then throw "Le SUT n'est pas disponiblee"
+	
+	(*
 	if imagefound(imagename:"apps/windows/cross_error_message", waitfor:20) then
 		typeText returnkey
 		wait 0.5
 	end if
+	*)
 	
 	logSuccess "vérifie que le SUT est bien pret pour recevoir des interactions OK"
 end je_verifie_que_le_SUT_est_disponible
@@ -36,10 +43,10 @@ to je_lance_le_navigateur_x with myBrowser, myOptions:{}
 	set browserList to {}
 
 	set chromeName to "chrome"
-	set edgeName to "edge"
+	// set edgeName to "edge"
 	
 	set browserList.(chromeName) to "chrome.exe"
-	set browserList.(edgeName) to "msedge.exe"
+	// set browserList.(edgeName) to "msedge.exe"
 	
 	// Controle des paramètres
 	set browserExecName to browserList.(myBrowser) 
