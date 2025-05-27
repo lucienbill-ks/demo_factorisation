@@ -18,7 +18,7 @@
 BeginTestCase "Tenter d'ouvrir VS code online sans etre authentifié à GitHub"
 "steps/common/action".je_verifie_que_le_SUT_est_disponible
 "steps/github/action".je_vais_sur_github_sans_me_connecter_a_un_compte
-"steps/github/action".je_vais_sur_le_repo_de_test
+"steps/github/action".je_vais_sur_le_repo_de_test "https://github.com/lucienbill/obsidian-daily-notes"
 "steps/github/action".je_tente_d_ouvrir_vs_code_online
 "steps/github/validation".je_verifie_que_vscode_online_ne_s_ouvre_pas
 

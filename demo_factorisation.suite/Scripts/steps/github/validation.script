@@ -1,6 +1,6 @@
 ﻿//Fichier pour les fonctions publiques de type validation
 
-to je_verifie_que_vscode_online_ne_s_ouvre_pas with repo_url:"steps/github/_lib"._get_default_test_repo
+to je_verifie_que_vscode_online_ne_s_ouvre_pas with repo_url:"steps/github/_lib"._get_default_test_repo()
 	log "Verifier que VS code en ligne ne s'est pas ouvert ..."
 	delete "https://" from repo_url
 	waitfor 10, text:repo_url, SearchRectangle: [0,0,RemoteScreenSize().x, 93]

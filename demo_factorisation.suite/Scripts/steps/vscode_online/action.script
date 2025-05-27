@@ -4,7 +4,12 @@
 	MoveTo text:"en-US", waitFor:30
 	Click (Image:"apps/vscode_online/create_new_file", WaitFor:5)
 	wait 2
-	typeText "steps/vscode_online/_lib"._get_default_newfile_name, returnkey
+	// note : j'utilise un "getter" plutot qu'un appel direct à la variable globale, pour 2 raisons : 
+	// 1) avec la fonction, j'ai l'auto-completion.
+	// 2) avec la fonction, si je fais une faute de frappe, ça plante. Tandis qu'avec une variable,
+	//     si je fais une faute de frappe dans le nom, ça retourne une valeur vide et ça ne plante
+	//     pas directement, mais plus tard (c'est plus compliqué à débogger)
+	typeText "steps/vscode_online/_lib"._get_default_newfile_name(), returnkey
 	wait 2
 	typeText "this is a new file!", returnkey
 	WaitFor 4, text:"this is a new file!"
@@ -14,7 +19,7 @@ end je_cree_un_nouveau_fichier
 
 to je_supprime_le_nouveau_fichier
 	log "Supprimer le nouveau fichier dans VS Code Online ..."
-	RightClick text:"steps/vscode_online/_lib"._get_default_newfile_name, waitFor:2, SearchRectangle:[0,92,350, RemoteScreenSize().y]
+	RightClick text:"steps/vscode_online/_lib"._get_default_newfile_name(), waitFor:2, SearchRectangle:[0,92,350, RemoteScreenSize().y]
 	wait 1
 	click text:"Delete Permanently", waitfor: 5, SearchRectangle:empty
 	wait 1
