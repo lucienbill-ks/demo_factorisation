@@ -36,7 +36,7 @@ to j_execute_une_commande_windows_r with myCmd
 	logSuccess "Utiliser Windows + r pour lancer la commande '" & myCmd & "' : OK"
 end j_execute_une_commande_windows_r
 
-je_lance_le_navigateur_x "chrooome"
+// je_lance_le_navigateur_x "chrooome"
 
 to je_lance_le_navigateur_x with myBrowser, myOptions:{}
 	// initialisation de la liste de navigateurs reconnus
