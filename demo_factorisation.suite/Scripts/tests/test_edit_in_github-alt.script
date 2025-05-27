@@ -1,0 +1,40 @@
+﻿// Ca fonctionne aussi. Le script en lui meme est plus facile à lire,
+// cependant il est moins évident de déterminer où se situe le code des fonctions
+// appelées, et on perd l'auto-completion (donc : j'aime moins)
+
+Start Using "steps/common/action"
+Start Using "steps/github/action"
+Start Using "steps/github/validation"
+Start Using "steps/vscode_online/validation"
+Start Using "steps/vscode_online/action"
+Start Using "steps/chrome_browser/action"
+Start Using "steps/keepass/action"
+
+
+BeginTestCase "Tenter d'ouvrir VS code online sans etre authentifié à GitHub"
+je_verifie_que_le_SUT_est_disponible
+je_vais_sur_github_sans_me_connecter_a_un_compte
+je_vais_sur_le_repo_de_test
+je_tente_d_ouvrir_vs_code_online
+je_verifie_que_vscode_online_ne_s_ouvre_pas
+EndTestCase "Tenter d'ouvrir VS code online sans etre authentifié à GitHub"
+
+//-----
+
+BeginTestCase "En étant authentifié à GitHub, ouvrir VS code online"
+je_m_authentifie_a_github
+je_tente_d_ouvrir_vs_code_online
+je_verifie_que_vscode_online_est_ouvert
+je_cree_un_nouveau_fichier
+je_supprime_le_nouveau_fichier
+EndTestCase "En étant authentifié à GitHub, ouvrir VS code online"
+
+//-----
+
+BeginTestCase "Tout fermer"
+je_ferme_vscode_online
+je_me_deconnecte_de_github
+je_ferme_chrome
+je_ferme_keepass
+EndTestCase "Tout fermer"
+
