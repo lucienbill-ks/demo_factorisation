@@ -1,0 +1,33 @@
+﻿// But de ce fichier : définir des fonctions personnalisés, essayer de faire encore plus simplle que SenseTalk
+
+// Actions
+
+// Clique sur une image ou un texte
+to cliquer with texte_ou_image:empty, options:{}
+
+	set options to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img(texte_ou_image, options)
+	
+	// DEBUG
+	// log ImageFound(options)
+	click options
+	
+end cliquer
+
+
+// TODO : extraire dans un fichier
+// Unit tests : not found
+// TODO : connect to tutorial SUT
+cliquer "browser/chrome/reloadIcon/", {waitfor:0}
+cliquer "browser/chrome/reloadIcon", {waitfor:0}
+cliquer "browser/chrome/reloadIcon/reloadIcon_dark", {waitfor:0}
+cliquer "browser/chrome/reloadIcon/reloadIcon_dark.png", {waitfor:0}
+cliquer "toto", {waitfor:0}
+cliquer empty, {text:"toto", waitfor:0}
+cliquer empty, {imagename:"browser/chrome/reloadIcon/reloadIcon_dark", waitfor:0}
+cliquer empty, {text:"toto", waitfor:0, SearchRectangle: [0, 0, 400, 400]}
+
+// unit test : wrong param
+cliquer empty, {imagename:"wrong_path", waitfor:0}
+
+// unit test : OK
+

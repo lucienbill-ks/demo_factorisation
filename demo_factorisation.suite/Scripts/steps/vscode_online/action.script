@@ -2,7 +2,8 @@
 	log "créer un nouveau fichier dans VS Code Online ..."
 	wait 3
 	MoveTo text:"en-US", waitFor:30
-	Click (Image:"apps/vscode_online/create_new_file", WaitFor:5)
+	// Click (Image:"apps/vscode_online/create_new_file", WaitFor:5)
+	cliquer "apps/vscode_online/create_new_file", {waitfor: 5}
 	wait 2
 	// note : j'utilise un "getter" plutot qu'un appel direct à la variable globale, pour 2 raisons : 
 	// 1) avec la fonction, j'ai l'auto-completion.

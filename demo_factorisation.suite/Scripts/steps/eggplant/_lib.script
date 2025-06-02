@@ -1,0 +1,35 @@
+﻿to _parser_parametres_recherche_txt_ou_img with texte_ou_image:empty, options:{}
+	// === paramètres obligatoires ===
+	// Parmis ces 3 paramètres, il en faut un seul :  texte_ou_imag, options.text, options.imageName
+	set count_param to 0
+	if not (texte_ou_image is empty) then add 1 to count_param
+	if not (options.text equals {:} or options.("text") equals options) then add 1 to count_param
+	if not (options.imageName is empty) then add 1 to count_param
+	
+	if count_param equals 0 then
+		Throw "Paramètres obligatoires manquants", "Veuillez renseigner l'un de ces paramètres: texte_ou_image, options.text, options.imageName"
+	else if not (count_param equals 1) then
+		set err to "Veuillez renseigner un seul de ces paramètres: texte_ou_image, options.text, options.imageName"
+		set err to err & newline & "valeurs reçues :"
+		set err to err & newline & "texte_ou_image :" && texte_ou_image
+		set err to err & newline & "options.text :" && options.text
+		set err to err & newline & "options.imageName :" && options.imageName
+		Throw "Trop de paramètres", err
+	end if
+	// =====================
+	
+	// Gérer "on clique sur quoi ?"
+	if not (texte_ou_image is empty) then
+		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & texte_ou_image)
+		if file imgpath exists or file (imgpath & ".png") exists then
+			add properties {imageName:texte_ou_image} to options
+		else
+			add properties {text:texte_ou_image} to options
+		end if
+	end if
+	
+	// Si pas de timeout, on le définit à 30 secondes par défaut
+	add properties {waitfor:30} to options
+	
+	return options
+end _parser_parametres_recherche_txt_ou_img

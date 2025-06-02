@@ -8,3 +8,6 @@
 
 set the sendShiftForCaps to no // for azerty keyboards
 set the ScriptLogging to yes
+
+// importer les fonctions customisées (note : n'apparaitront pas dans l'auto completion)
+Start Using "steps/eggplant/custom_functions"
