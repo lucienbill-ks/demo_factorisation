@@ -1,0 +1,65 @@
+﻿// Fichier de test unitaires (basique)
+Connect serverID:"TutorialSUT", portNum:5900
+
+set counter to 0
+set defaultImageUpdate to the ImageUpdate
+Set the ImageUpdate to Off
+
+// instructions qui doivent etre OK (ne retournent rien)
+set listOfTests_ok to [
+	// Cliquer
+	<<cliquer "unitTests/battery_full", {waitfor:0}>>,
+	<<cliquer "unitTests/battery_full.png", {waitfor:0}>>,
+	<<cliquer "Not a real phone", {waitfor:0, caseSensitive:true}>>,
+	<<cliquer "not a real phone", {waitfor:0, caseSensitive:false, SearchRectangle:(14,175,369,275)}>>,
+	<<cliquer "unitTests/battery_full">>,
+	<<cliquer "unitTests/collection">>,
+	<<cliquer "not a real phone", {caseSensitive:false, SearchRectangle:(14,175,369,275)}>>,
+]
+
+// instructions qui doivent lever une exception
+set listOfTests_ko to [
+	// Cliquer
+	<<cliquer "browser/chrome/reloadIcon/", {waitfor:0}>>,
+	<<cliquer "ce texte n'est pas présent sur l'écran", {waitfor:0}>>,
+	<<cliquer empty, {imagename:"wrong_path", waitfor:0}>>
+]
+
+// instruction qui doivent retourner true
+set listOfTests_true to []
+
+// instruction qui doivent retourner false
+set listOfTests_false to []
+
+Repeat with each item myInstruction of listOfTests_ok
+	set tc_name to "Unit_Test_" & counter & "_expect_OK : " & myInstruction
+	BeginTestCase tc_name
+	Try
+		send myInstruction.text to SenseTalk
+	Catch theException
+		logWarning myInstruction.text
+		LogError theException 
+	End try
+	EndTestCase tc_name
+	
+	add 1 to counter
+End repeat
+
+Repeat with each item myInstruction of listOfTests_ko
+	set tc_name to "Unit_Test_" & counter & "_expect_Expection : " & myInstruction
+	BeginTestCase tc_name
+	Try
+		send myInstruction.text to SenseTalk
+		logError "Cette instruction aurait du causer une exception: " && myInstruction
+	Catch theException
+		// noop; OK
+		LogSuccess "Il y a bien eu une exception"
+	End try
+	EndTestCase tc_name
+	
+	add 1 to counter
+End repeat
+
+Disconnect
+Set the ImageUpdate to defaultImageUpdate
+
