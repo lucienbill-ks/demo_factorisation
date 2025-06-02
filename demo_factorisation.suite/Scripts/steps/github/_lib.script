@@ -29,7 +29,7 @@ to _ensure_disconnection with myOptions:{}
 	// S'assurer qu'on est sur github, pas logué
 	repeat 10 times
 		if ImageFound(text:"Select account to sign out", waitFor:0) then
-			click text:"Sign out from all accounts", waitFor:0
+			cliquer "Sign out from all accounts", {waitFor:0}
 			wait 2
 		end if
 		

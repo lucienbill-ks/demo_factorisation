@@ -31,7 +31,6 @@ end je_tente_d_ouvrir_vs_code_online
 
 to je_m_authentifie_a_github
 	log "S'authentifier à GitHub ..."
-	// Click text:"Sign in", waitFor:3
 	cliquer "Sign in", {waitfor: 3}
 	wait 1
 	WaitFor 10, text:"Username or email address", SearchRectangle:empty

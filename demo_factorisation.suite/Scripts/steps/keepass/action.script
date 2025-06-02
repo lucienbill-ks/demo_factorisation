@@ -24,7 +24,6 @@ end j_ouvre_le_coffree_keepass
 
 to j_utilise_autotype with myEntry:"GitHub with OTP"
 	log "Trouver l'entrée" && myEntry && "dans Keepass et utiliser l'auto-type ..."
-	// Click text:myEntry, waitFor:2
 	cliquer myEntry, {waitfor: 2}
 	wait 0.5
 	TypeText controlKey, "v"

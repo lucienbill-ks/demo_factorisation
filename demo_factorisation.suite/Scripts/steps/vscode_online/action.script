@@ -2,7 +2,6 @@
 	log "créer un nouveau fichier dans VS Code Online ..."
 	wait 3
 	MoveTo text:"en-US", waitFor:30
-	// Click (Image:"apps/vscode_online/create_new_file", WaitFor:5)
 	cliquer "apps/vscode_online/create_new_file", {waitfor: 5}
 	wait 2
 	// note : j'utilise un "getter" plutot qu'un appel direct à la variable globale, pour 2 raisons : 
@@ -20,9 +19,9 @@ end je_cree_un_nouveau_fichier
 
 to je_supprime_le_nouveau_fichier
 	log "Supprimer le nouveau fichier dans VS Code Online ..."
-	RightClick text:"steps/vscode_online/_lib"._get_default_newfile_name(), waitFor:2, SearchRectangle:[0,92,350, RemoteScreenSize().y]
+	cliquerDroit "steps/vscode_online/_lib"._get_default_newfile_name(), {waitFor:2, SearchRectangle:[0,92,350, RemoteScreenSize().y]}
 	wait 1
-	click text:"Delete Permanently", waitfor: 5, SearchRectangle:empty
+	cliquer "Delete Permanently", {waitfor: 5, SearchRectangle:empty}
 	wait 1
 	WaitFor 10, text:"Are you sure you want to permanently delete"
 	typeText returnkey	
