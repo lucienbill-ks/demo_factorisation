@@ -1,2 +1,23 @@
 ﻿// But du script : exécuter tous les tests d'un dossier 
 "steps/common/autre".j_execute_tous_les_test_du_dossier_x  "tests/group_of_tests"
+
+(*set mondossier to  "tests/group_of_tests"
+if mondossier is empty then Throw "Paramètre incorrect", "Le parametre mondossier est obligatoire"
+
+set scriptDirPath to the resolvedfilePath of ( ResourcePath() & "/../Scripts/" & mondossier)
+
+set listOfTestsToRun to files of scriptDirPath
+
+if the number of items of listOfTestsToRun is 0 then
+	Throw "Aucun test à exécuter", "Aucun script n'a été trouvé dans le dossier" && mondossier
+	
+end if
+
+Repeat with each item myTest of listOfTestsToRun
+	RunWithNewResults mondossier & "/" & myTest
+	
+	// if the result's status is "failure" then
+	// LogError "test failed. Performing cleanup action"
+	// some actions
+	// end if	
+End repeat*)

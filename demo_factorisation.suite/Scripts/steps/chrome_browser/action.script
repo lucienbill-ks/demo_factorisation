@@ -1,18 +1,18 @@
 ﻿//Fichier pour les fonctions publiques de type action
 
 to j_ouvre_une_nouvelle_session_chrome with myOptions:{}
-	log "ouvrir Chrome ..."
+	logFct myOptions
 	"steps/common/action".je_lance_le_navigateur_x "chrome", myOptions
-	logSuccess "ouvrir Chrome : OK"
+	logFct
 end j_ouvre_une_nouvelle_session_chrome
 
 to je_ferme_chrome
-	log "fermer Chrome ..."
+	logFct
 	typeText altKey, f4
 	wait 1
 	repeat 5 times
 		if not ImageFound(imageName:"browser/chrome/icon_taskbar", waitFor:2) then
-			LogSuccess "fermer Chrome : OK"
+			logFct
 			return
 		end if
 		

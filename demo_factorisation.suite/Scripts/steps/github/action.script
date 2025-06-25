@@ -1,14 +1,17 @@
 ﻿//Fichier pour les fonctions publiques de type action
 
 to je_vais_sur_github_sans_me_connecter_a_un_compte
-	log "Aller sur github, s'assurer qu'on n'est pas connecté à un compte : ..."
+	logFct
 	"steps/github/_lib"._ensure_disconnection {nouvelleSessionNavigateur:true}
-	logSuccess "Aller sur github, s'assurer qu'on n'est pas connecté à un compte : OK"
+	logFct
 end je_vais_sur_github_sans_me_connecter_a_un_compte
 
+je_vais_sur_github_sans_me_connecter_a_un_compte
+
 to je_vais_sur_le_repo_de_test with repo_url:"steps/github/_lib"._get_default_test_repo()
-	log "Visiter le repo" && repo_url && " ..."
+	logFct repo_url
 	
+	wait 1
 	TypeText f6 // revient à cliquer dans la barre d'URL
 	wait 0.5
 	typeText repo_url, returnkey
@@ -19,19 +22,19 @@ to je_vais_sur_le_repo_de_test with repo_url:"steps/github/_lib"._get_default_te
 	
 	waitfor 10, text:validationStr, SearchRectangle: [0,93,RemoteScreenSize().x, 300]
 	
-	logSuccess "Visiter le repo" && repo_url && ": OK"
+	logFct
 end je_vais_sur_le_repo_de_test
 
 to je_tente_d_ouvrir_vs_code_online
-	log "tenter d'ouvrir VS code online ..."
+	logFct
 	typeText "."
 	wait 2
-	logSuccess "tenter d'ouvrir VS code online OK"
+	logFct
 end je_tente_d_ouvrir_vs_code_online
 
 to je_m_authentifie_a_github
-	log "S'authentifier à GitHub ..."
-	Click text:"Sign in", waitFor:3
+	logFct
+	cliquer "Sign in"
 	wait 1
 	WaitFor 10, text:"Username or email address", SearchRectangle:empty
 	
@@ -45,11 +48,11 @@ to je_m_authentifie_a_github
 		Throw "Echec du login à GitHub", "L'authentification n'a pas fonctionné"
 	end if
 	
-	logSuccess "S'authentifier à GitHub : OK"
+	logFct
 end je_m_authentifie_a_github
 
 to je_me_deconnecte_de_github
-	log "Se déconnecter de GitHub : ..."
+	logFct
 	"steps/github/_lib"._ensure_disconnection {nouvelleSessionNavigateur:false}
-	logSuccess "Se déconnecter de GitHub : OK"
+	logFct
 end je_me_deconnecte_de_github

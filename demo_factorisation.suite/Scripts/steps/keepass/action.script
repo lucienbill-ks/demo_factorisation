@@ -1,7 +1,7 @@
 ﻿//Fichier pour les fonctions publiques de type action
 
 to j_ouvre_le_coffree_keepass with vaultPath:"C:\Users\lucibill\OneDrive - Keysight Technologies\Documents\Keepass\test-EPF.kdbx"
-	log "Ouverture du coffre Keepass" && vaultPath && ": ..."
+	logFct vaultPath
 	set myProgram to <<"C:\Program Files\KeePass Password Safe 2\KeePass.exe">> 
 	"steps/common/action".j_execute_une_commande_windows_r myProgram && quote & vaultPath & quote
 	
@@ -18,13 +18,12 @@ to j_ouvre_le_coffree_keepass with vaultPath:"C:\Users\lucibill\OneDrive - Keysi
 	WaitFor 25, "apps/keepass/keepasslogo_topmenu"
 	WaitFor 20, "apps/keepass/icon_lockworkspace"
 	
-	logSuccess "Ouverture du coffre Keepass" && vaultPath && ": OK"
-	
+	logFct	
 end j_ouvre_le_coffree_keepass
 
 to j_utilise_autotype with myEntry:"GitHub with OTP"
 	log "Trouver l'entrée" && myEntry && "dans Keepass et utiliser l'auto-type ..."
-	Click text:myEntry, waitFor:2
+	cliquer myEntry
 	wait 0.5
 	TypeText controlKey, "v"
 	wait 5	
@@ -32,7 +31,7 @@ to j_utilise_autotype with myEntry:"GitHub with OTP"
 end j_utilise_autotype
 
 to je_copie_colle_le_code_otp_de_l_entree_selectionnee
-	log "Copier/coller le jeton OTP de l'entrée Keepass sélectionnée ..."
+	logFct
 	TypeText altKey, tabKey
 	wait 2
 	
@@ -46,16 +45,16 @@ to je_copie_colle_le_code_otp_de_l_entree_selectionnee
 	TypeText shiftKey, insertkey
 	TypeText returnKey
 	
-	logSuccess "Copier/coller le jeton OTP de l'entrée Keepass sélectionnée : OK"
+	logFct
 end je_copie_colle_le_code_otp_de_l_entree_selectionnee
 
 to je_ferme_keepass
-	log "fermer Keepass ..."
+	logFct
 	typeText altKey, f4
 	wait 1
 	repeat 5 times
 		if not ImageFound(imageName:"apps/keepass/icon_taskbar", waitFor:2) then
-			LogSuccess "fermer Keepass : OK"
+			logFct
 			return
 		end if
 		
@@ -63,5 +62,4 @@ to je_ferme_keepass
 	end repeat
 	
 	Throw "Quitter Keepass : échec", "L'icone de Keepass est encore présente dans la barre des taches"
-	
 end je_ferme_keepass

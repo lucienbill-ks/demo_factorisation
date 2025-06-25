@@ -5,7 +5,7 @@ to _get_default_test_repo
 end _get_default_test_repo
 
 to _ensure_disconnection with myOptions:{}
-	log "s'assurer d'etre sur github, déconnecté de tout compte ..."
+	logFct myOptions
 	// === Valeurs et comportement par défaut ===
 	// Ouvrir une nouvelle session de navigateur
 	if myOptions.nouvelleSessionNavigateur is empty then
@@ -29,12 +29,12 @@ to _ensure_disconnection with myOptions:{}
 	// S'assurer qu'on est sur github, pas logué
 	repeat 10 times
 		if ImageFound(text:"Select account to sign out", waitFor:0) then
-			click text:"Sign out from all accounts", waitFor:0
+			cliquer "Sign out from all accounts"
 			wait 2
 		end if
 		
 		if ImageFound(text:"Sign in", waitFor:0) then
-			logSuccess "s'assurer d'etre sur github, déconnecté de tout compte : OK"
+			logFct
 			return
 		end if
 		
