@@ -1,0 +1,210 @@
+﻿// But de ce fichier : définir des fonctions personnalisés, essayer de faire encore plus simplle que SenseTalk
+
+// =======================
+// CUSTOM FUNCTIONS
+// =======================
+
+// TODO  : demander à Karsten, Seb me dit qu'il a un truc
+(*
+@Snippet cliquer [texte ou image]
+@Template
+cliquer "[@texte ou image]"
+@Documentation
+epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
+@Description
+Cliquer sur un texte ou sur une image.
+
+Exemples :
+Cliquer "mon texte"
+Cliquer "chemin/vers/une/image.png"
+Cliquer "chemin/vers/une/collection"
+
+Exemple avec des paramètres avancés : 
+Cliquer {textOrImage:"mon texte", waitfor: 5, caseSensitive : true, validWords : "*"}
+
+Pour plus d'exemples de paramètres, voir https://docs.eggplantsoftware.com/studio/epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
+*)
+to cliquer with texte_ou_image_ou_options:empty, moreOptions:{}
+	set options to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_click(texte_ou_image_ou_options, moreOptions)
+	click options
+	
+end cliquer
+
+
+to cliquerDroit with texte_ou_image_ou_options:empty, moreOptions:{}
+	set options to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_click(texte_ou_image_ou_options, moreOptions)
+	RightClick options
+end cliquerDroit
+
+to attendre with texte_ou_image_ou_options, moreOptions:{}
+	set params to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_waitfor(texte_ou_image_ou_options, moreOptions)
+	waitfor the first item of params, the second item of params
+	// log "waitfor" &&  the first item of params &"," && the second item of params // DEBUG
+end attendre
+
+to logFct 
+	// Goal: to log the entering / exiting of functions
+	// At the beginging of the function (such as: to myfunction param_1, param_2), call it like this:
+	// logFct param_1, param_2
+	//
+	// At the end of the function, just call it again
+	// logFct
+	//
+	// caveat: if you use try/catch when calling a function that uses logFct, do this:
+	//
+	// Try
+	// 	myfunction "this will fail"
+	// Catch theException
+	// 	delete the last item of global fct_stack
+	// 	delete the last item of global param_stack
+	// 	
+	// 	// Then do your things
+	// End try
+	
+	
+	global fct_stack, param_stack
+	if fct_stack is empty then 
+		set fct_stack to []
+		set param_stack to []
+	end if
+	
+	// build the string to dispplay
+	set current_function to the Handler of the second-to-last item of the callStack 
+	
+	// Are we entering or leaving the function?
+	set is_entering_function to (the last item of fct_stack is not current_function)
+	
+	if is_entering_function then
+		set param_str to the params
+		delete param(0) from param_str
+		
+		if param_str is not << "">> then
+			log current_function && param_str && "..."
+		else
+			log current_function && "..."
+		end if
+		insert current_function into fct_stack
+		insert param_str into param_stack
+	else // we are leaving the function
+		set param_str to the last item of param_stack
+		if param_str is not << "">> then
+			logSuccess current_function && param_str && ": OK"
+		else
+			logSuccess current_function & "OK"
+		end if
+		delete the last item of fct_stack
+		delete the last item of param_stack
+	end if
+end logFct
+
+// ==============================
+// TWEAKING STANDARD SENSETALK FUNCTIONS
+// ==============================
+
+
+to click myparameters
+	Try
+		put "click" && myparameters
+		send click myparameters to SenseTalk
+		// wait 0.5
+	Catch theException
+		throw theException
+	End try
+end click
+
+to RightClick myparameters
+	Try
+		put "RightClick" && myparameters
+		send RightClick myparameters to SenseTalk
+		// wait 0.5
+	Catch theException
+		throw theException
+	End try
+end RightClick
+
+to waitfor timeout, arguments
+	Try
+		put "waitfor" && timeout & "," && arguments
+		send waitfor timeout, arguments to SenseTalk
+	Catch theException
+		throw theException
+	End try
+end waitfor
+
+(*to ImageRectangle myparam
+	set timeout to 30
+	Try
+		send waitfor timeout, myparam to SenseTalk // FIXME: use ImageFound instead; to be able to send a "waitfor". First, what parameters does the standard function receives? Must be the same
+		return FoundImageInfo().imageRectangle
+	Catch theException
+		throw theException
+	End try
+	
+end ImageRectangle*)
+
+
+
+to Throw with theException, thereason
+	set stk to the callStack
+	delete the last item of stk
+	set my_stack to "Call stack:" & newline
+	Repeat with each item stk_element of stk
+		if the repeatIndex is 1 then
+			set my_stack to my_stack & stk_element.Handler & ".script"
+		else
+			set scriptName to stk_element.ScriptObjectID
+			delete "<SOURCE>" from scriptName
+			delete "<SELECTION>" from scriptName
+			set my_stack to my_stack & newline & scriptName & " > " & stk_element.Handler
+		end if
+		
+		set my_stack to my_stack && "(script line " & stk_element.ScriptLine &" ; function line " && stk_element.line & ")"
+	End repeat
+	
+	set thereason to thereason & newline & newline & my_stack
+	
+	send throw theException, thereason to SenseTalk
+end Throw
+
+to waitForAny listOfElementsToFind:[], maxWait:30, optional_ocr_options:{}
+	// WIP
+	// Waits for any element in the list to be dislayed
+	
+	// First, check that the parameters are correct
+	if listOfElementsToFind is not a list or maxWait is not a number then
+		Throw "Incorrect Parameter(s)", "waitForAny must receive a list and a number (max wait time); received this instead: " & newline & "listOfElementsToFind: " & listOfElementsToFind & newline & "maxWait: " & maxWait
+	end if
+	
+	// Then, try to find any of the element
+	set finalList to []
+
+	Repeat with each item myElement of listOfElementsToFind
+		set ocr_options to {}
+
+		// Is the element to find an image or a text?
+		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & myElement)
+		if file imgpath exists or file (imgpath & ".png") exists then
+			add properties {imageName:myElement} to ocr_options
+		else
+			add properties {text:myElement} to ocr_options
+		end if
+		
+		add properties optional_ocr_options to ocr_options
+		
+		insert ocr_options into finalList
+	End repeat
+	
+	// log "waitfor" && maxWait &","&& finalList //DEBUG
+	waitfor maxWait, finalList
+	
+end waitForAny
+
+to ScrollWheelUp scrollAmount
+	send ScrollWheelUp scrollAmount to SenseTalk
+	wait 0.5    
+end ScrollWheelUp
+
+to ScrollWheelDown scrollAmount
+	send ScrollWheelDown scrollAmount to SenseTalk
+	wait 0.5    
+end ScrollWheelDown

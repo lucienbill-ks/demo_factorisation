@@ -1,0 +1,149 @@
+﻿// Fichier de test unitaires (basique)
+Connect serverID:"TutorialSUT", portNum:5900
+
+set counter to 0
+set defaultImageUpdate to the ImageUpdate
+Set the ImageUpdate to Off
+
+// instructions qui doivent etre OK (ne retournent rien)
+set listOfTests_ok to [
+	// Cliquer
+	<<cliquer "unitTests/battery_full">>,
+	<<cliquer {image:"unitTests/battery_full", waitfor:0}>>,
+	<<cliquer {imageName:"unitTests/battery_full", waitfor:0}>>,
+	<<cliquer {textOrImage:"unitTests/battery_full", waitfor:0}>>,
+	<<cliquer "unitTests/battery_full.png">>,
+	<<cliquer {image:"unitTests/battery_full.png", waitfor:0}>>,
+	<<cliquer {imageName:"unitTests/battery_full.png", waitfor:0}>>,
+	<<cliquer {textOrImage:"unitTests/battery_full.png", waitfor:0}>>,
+	<<cliquer "Not a real phone">>,
+	<<cliquer {textOrImage:"Not a real phone", waitfor:0, caseSensitive:true}>>,
+	<<cliquer {text:"Not a real phone", waitfor:0, caseSensitive:true}>>,
+	<<cliquer {textOrImage:"Not a real phone", waitfor:0, caseSensitive:true, SearchRectangle:(14,175,369,275)}>>,
+	<<cliquer {text:"Not a real phone", waitfor:0, caseSensitive:true, SearchRectangle:(14,175,369,275)}>>,
+	<<cliquer "unitTests/battery_full">>,
+	<<cliquer "unitTests/collection">>,
+	<<cliquer {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false}>>,
+	<<cliquer {text:"Not a real phone", waitfor:0, caseSensitive:false}>>,
+	<<cliquer {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false, SearchRectangle:(14,175,369,275)}>>,
+	<<cliquer {text:"Not a real phone", waitfor:0, caseSensitive:false, SearchRectangle:(14,175,369,275)}>>,
+	<<cliquer text:<2 digits, ":", 2 digits>, SearchRectangle:[117,0,278,32]>>,
+	<<cliquer textOrImage:"unitTests/battery_full.png", SearchRectangle:[318,0,426,90]>>,
+	<<cliquer "unitTests/battery_full.png", SearchRectangle:[318,0,426,90]>>,
+	<<cliquer {textOrImage:<2 digits, ":", 2 digits>}>>,
+	<<cliquer "phone", caseSensitive:false>>,
+	<<cliquer "unitTests/battery_full.png", SearchRectangle:[318,0,426,90]>>,
+	<<cliquer {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false}, {validCharacters:"*"}>>,
+	<<cliquer textOrImage:"phone", caseSensitive:false>>,
+	<<cliquer {textOrImage:"phone", caseSensitive:false}, {validwords:"*"}>>,
+	<<cliquer "phone", caseSensitive:false>>,
+	<<cliquer "phone", {caseSensitive:false}>>,
+	
+	// waitfor
+	<<attendre "unitTests/battery_full">>,
+	<<attendre {image:"unitTests/battery_full", waitfor:0}>>,
+	<<attendre {imageName:"unitTests/battery_full", waitfor:0}>>,
+	<<attendre {textOrImage:"unitTests/battery_full", waitfor:0}>>,
+	<<attendre "unitTests/battery_full.png">>,
+	<<attendre {image:"unitTests/battery_full.png", waitfor:0}>>,
+	<<attendre {imageName:"unitTests/battery_full.png", waitfor:0}>>,
+	<<attendre {textOrImage:"unitTests/battery_full.png", waitfor:0}>>,
+	<<attendre "Not a real phone">>,
+	<<attendre {textOrImage:"Not a real phone", waitfor:0, caseSensitive:true}>>,
+	<<attendre {text:"Not a real phone", waitfor:0, caseSensitive:true}>>,
+	<<attendre {textOrImage:"Not a real phone", waitfor:0, caseSensitive:true, SearchRectangle:(14,175,369,275)}>>,
+	<<attendre {text:"Not a real phone", waitfor:0, caseSensitive:true, SearchRectangle:(14,175,369,275)}>>,
+	<<attendre "unitTests/battery_full">>,
+	<<attendre "unitTests/collection">>,
+	<<attendre {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false}>>,
+	<<attendre {text:"Not a real phone", waitfor:0, caseSensitive:false}>>,
+	<<attendre {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false, SearchRectangle:(14,175,369,275)}>>,
+	<<attendre {text:"Not a real phone", waitfor:0, caseSensitive:false, SearchRectangle:(14,175,369,275)}>>,
+	<<attendre text:<2 digits, ":", 2 digits>, SearchRectangle:[117,0,278,32]>>,
+	<<attendre textOrImage:"unitTests/battery_full.png", SearchRectangle:[318,0,426,90]>>,
+	<<attendre "unitTests/battery_full.png", SearchRectangle:[318,0,426,90]>>,
+	<<attendre {textOrImage:<2 digits, ":", 2 digits>}>>,
+	<<attendre "phone", caseSensitive:false>>,
+	<<attendre "unitTests/battery_full.png", SearchRectangle:[318,0,426,90]>>,
+	<<attendre "phone", caseSensitive:false, {caseSensitive:false}>>,
+	<<attendre {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false}, {validCharacters:"*"}>>,
+	<<attendre {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false}, {validCharacters:"*"}>>,
+	<<attendre textOrImage:"phone", caseSensitive:false>>,
+	<<attendre {textOrImage:"phone", caseSensitive:false}, {validwords:"*"}>>,
+	<<attendre "phone", caseSensitive:false>>,
+	<<attendre "phone", {caseSensitive:false}>>,
+]
+
+
+
+// instructions qui doivent lever une exception
+set listOfTests_ko to [
+	// Cliquer
+	<<cliquer "browser/chrome/reloadIcon/", {waitfor:0}>>,
+	<<cliquer "ce texte n'est pas présent sur l'écran", {waitfor:0}>>,
+	<<cliquer empty, {imagename:"wrong_path", waitfor:0}>>,
+	<<cliquer empty>>,
+	<<cliquer {textOrImage:"browser/chrome/reloadIcon/", waitfor:0}>>,
+	<<cliquer {image:"browser/chrome/reloadIcon/", waitfor:0}>>,
+	<<cliquer {imageName:"browser/chrome/reloadIcon/", waitfor:0}>>,
+	<<cliquer {textOrImage:"ce texte n'est pas présent sur l'écran", waitfor:0}>>,
+	<<cliquer {text:"ce texte n'est pas présent sur l'écran", waitfor:0}>>,
+	<<cliquer {image:"wrong_path", waitfor:0}>>,
+	<<cliquer {imagename:"wrong_path", waitfor:0}>>,
+	<<cliquer {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false, text:"Not a real phone"}>>,
+	<<cliquer "phone",  "phones">>,
+	// waitfor
+	<<attendre "browser/chrome/reloadIcon/", {waitfor:0}>>,
+	<<attendre "ce texte n'est pas présent sur l'écran", {waitfor:0}>>,
+	<<attendre empty, {imagename:"wrong_path", waitfor:0}>>,
+	<<attendre empty>>,
+	<<attendre {textOrImage:"browser/chrome/reloadIcon/", waitfor:0}>>,
+	<<attendre {image:"browser/chrome/reloadIcon/", waitfor:0}>>,
+	<<attendre {imageName:"browser/chrome/reloadIcon/", waitfor:0}>>,
+	<<attendre {textOrImage:"ce texte n'est pas présent sur l'écran", waitfor:0}>>,
+	<<attendre {text:"ce texte n'est pas présent sur l'écran", waitfor:0}>>,
+	<<attendre {image:"wrong_path", waitfor:0}>>,
+	<<attendre {imagename:"wrong_path", waitfor:0}>>,
+	<<attendre {textOrImage:"Not a real phone", waitfor:0, caseSensitive:false, text:"Not a real phone"}>>,
+	<<attendre "phone", "phones">>,	
+]
+
+// instruction qui doivent retourner true
+set listOfTests_true to []
+
+// instruction qui doivent retourner false
+set listOfTests_false to []
+
+Repeat with each item myInstruction of listOfTests_ok
+	set tc_name to "Unit_Test_" & counter & "_expect_OK : " & myInstruction
+	BeginTestCase tc_name
+	logWarning myInstruction.text
+	Try
+		send myInstruction.text to SenseTalk
+	Catch theException
+		LogError theException 
+	End try
+	EndTestCase tc_name
+	
+	add 1 to counter
+End repeat
+
+Repeat with each item myInstruction of listOfTests_ko
+	set tc_name to "Unit_Test_" & counter & "_expect_Expection : " & myInstruction
+	BeginTestCase tc_name
+	logWarning myInstruction.text
+	Try
+		send myInstruction.text to SenseTalk
+		logError "Cette instruction aurait du causer une exception: " && myInstruction
+	Catch theException
+		// noop; OK
+		LogSuccess "Il y a bien eu une exception"
+	End try
+	EndTestCase tc_name
+	
+	add 1 to counter
+End repeat
+
+Disconnect
+Set the ImageUpdate to defaultImageUpdate
+

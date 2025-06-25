@@ -1,0 +1,160 @@
+﻿// This script parses all the script files and looks for things to insert in the
+// Suite Snippets (very useful for auto completion / easy documentation)
+
+// WORK IN PROGRESS - not ready at all
+
+set begining_of_file to "TODO"
+set ending_of_file to "TODO"
+
+// prepare the tags to look for in the files
+set marker_comments_start to "(*"
+set marker_comments_end to "*)"
+
+set content_markers to { // Must be in this order
+	Snippet:  "@Snippet",
+	Template:  "@Template",
+	Documentation:  "@Documentation", // Optional
+	Description: "@Description"
+}
+set active_parsing_states to [
+	"Snippet", "Template", "Documentation", "Description"
+]
+
+// Get the list of files to parse
+set start_dir to the filePath of  ResourcePath() & "/../Scripts/steps"
+set all_files to get_all_files_to_parse_in_folder_x_recurse(start_dir)
+
+// Parse the files
+set record_to_write to []
+
+set flag_parsing_active to false
+Repeat with each item myfile of all_files
+	Try
+		put file myfile into filecontent
+		
+		// If there is no snippet in the file, then skip it
+		set skip_this_file to true
+		if content_markers.Snippet is in filecontent then
+			set skip_this_file to false
+		end if
+		
+		
+		split filecontent by newline
+		
+		if not skip_this_file then
+			// parse the lines
+			
+			set record_buffer to []
+			set parsing_state to "None"
+			set skip_this_annotation to false
+			Repeat with each item myline of filecontent
+				set my_i to the repeatIndex
+				// Only parse lines that are between "*(" and ")*" comments
+				if myline starts with marker_comments_start then
+					set flag_parsing_active to true
+				else if myline starts with marker_comments_end then
+					set flag_parsing_active to false
+					insert record_buffer into record_to_write
+					set record_buffer to []
+					set parsing_state to "None"
+					set skip_this_annotation to false
+				else if flag_parsing_active and not skip_this_annotation then
+					// parse
+					if myline starts with content_markers.Snippet then
+						if parsing_state is not "None" then
+							set skip_this_annotation to true
+							set record_buffer to []
+							set parsing_state to "None"
+							LogWarning "Parsing error: unexpected tag " &  content_markers.Snippet & " at line" && my_i&&"of file " & myfile & " ; section not added to the suite snippets file"
+						else
+							set parsing_state to "Snippet"
+							delete content_markers.Snippet from myline
+							set myline to "Suite Snippets->" & myline
+						end if
+						
+						
+					else if myline starts with content_markers.Template then
+						if parsing_state is not "Snippet" then
+							set skip_this_annotation to true
+							set record_buffer to []
+							set parsing_state to "None"
+							LogWarning "Parsing error: unexpected tag " &  content_markers.Snippet & " at line" && my_i&&"of file " & myfile & " ; section not added to the suite snippets file"
+						else
+							set parsing_state to "Template"
+							insert "@Template" into record_buffer
+							delete content_markers.Template from myline
+						end if
+						
+						
+						
+					else if myline starts with content_markers.Documentation then // optional state
+						if parsing_state is not "Template" then
+							set skip_this_annotation to true
+							set record_buffer to []
+							set parsing_state to "None"
+							LogWarning "Parsing error: unexpected tag " &  content_markers.Snippet & " at line" && my_i&&"of file " & myfile & " ; section not added to the suite snippets file"
+						else
+							set parsing_state to "Documentation"
+							insert "@Documentation" into record_buffer
+							delete content_markers.Documentation from myline
+						end if
+						
+						
+					else if myline starts with content_markers.Description then
+						if parsing_state is not in ["Template", "Documentation"] then
+							set skip_this_annotation to true
+							set record_buffer to []
+							set parsing_state to "None"
+							LogWarning "Parsing error: unexpected tag " &  content_markers.Snippet & " at line" && my_i&&"of file " & myfile & " ; section not added to the suite snippets file"
+						else
+							set parsing_state to "Description"
+							insert "@Description" into record_buffer
+							delete content_markers.Description from myline
+						end if
+						
+						
+					end if
+					
+					if parsing_state is in active_parsing_states and not skip_this_annotation then
+						if trim(myline) is not "" then
+							insert myline into record_buffer
+						end if
+					end if
+				end if
+			end repeat
+		end if	
+		
+	Catch theException
+		// Noop
+	End try
+	
+End repeat
+
+// DEBUG
+Repeat with each item my_snippet_line of record_to_write
+	log my_snippet_line
+End repeat
+
+
+
+to get_all_files_to_parse_in_folder_x_recurse with mypath
+	set listOfFiles to []
+
+	set myfiles to the files in mypath
+	Repeat with each item myfile of myfiles
+		if myfile ends with ".script" then insert mypath & "/" & myfile into listOfFiles
+	End repeat
+	
+	set subfolders to the folders in mypath
+	repeat with each item subfolder of subfolders
+		set myfiles to get_all_files_to_parse_in_folder_x_recurse(mypath & "/" & subfolder)
+		insert myfiles into listOfFiles
+	end repeat
+	
+	return listOfFiles
+end get_all_files_to_parse_in_folder_x_recurse
+
+(*set mylist to []
+insert [[1,2]] into mylist
+insert [[3,4]] into mylist
+log mylist*)

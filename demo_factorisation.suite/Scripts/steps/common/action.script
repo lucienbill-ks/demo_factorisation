@@ -1,6 +1,6 @@
 ﻿//Fichier pour les fonctions publiques de type action
 to je_verifie_que_le_SUT_est_disponible
-	log "vérifie que le SUT est bien pret pour recevoir des interactions ..."
+	logFct
 	// note : nécessaire pour DAI, qui ouvre/ferme le SUT pour chaque test
 	set max_wait_time to 120 // 2 minutes
 	set wait_interval to 5
@@ -24,21 +24,21 @@ to je_verifie_que_le_SUT_est_disponible
 	end if
 	*)
 	
-	logSuccess "vérifie que le SUT est bien pret pour recevoir des interactions OK"
+	logFct
 end je_verifie_que_le_SUT_est_disponible
 
 to j_execute_une_commande_windows_r with myCmd
-	log "Utiliser Windows + r pour lancer la commande '" & myCmd & "' ..."
+	logFct myCmd
 	TypeText windowsKey, "r"
 	wait 0.5
 	typeText myCmd, returnKey
 	wait 0.5
-	logSuccess "Utiliser Windows + r pour lancer la commande '" & myCmd & "' : OK"
+	logFct
 end j_execute_une_commande_windows_r
 
-// je_lance_le_navigateur_x "chrooome"
 
 to je_lance_le_navigateur_x with myBrowser, myOptions:{}
+	logFct myBrowser, myOptions
 	// initialisation de la liste de navigateurs reconnus
 	set browserList to {}
 
@@ -63,8 +63,8 @@ to je_lance_le_navigateur_x with myBrowser, myOptions:{}
 		set myOptions.incognito to false
 	end if
 	
-	// Chrome et Edge (meme moteur)
-	if myBrowser is in [chromeName, edgeName] then
+	// Chrome
+	if myBrowser is chromeName then
 		set myCmd to browserList.(myBrowser) && myOptions.startUrl
 		if myOptions.startMaximized is true then
 			set myCmd to myCmd && "--start-maximized"
@@ -76,5 +76,6 @@ to je_lance_le_navigateur_x with myBrowser, myOptions:{}
 	
 	j_execute_une_commande_windows_r myCmd
 	wait 2
-	waitfor 30, "browser/"&myBrowser&"/reloadIcon"
+	Attendre "browser/"&myBrowser&"/reloadIcon"
+	logFct
 end je_lance_le_navigateur_x

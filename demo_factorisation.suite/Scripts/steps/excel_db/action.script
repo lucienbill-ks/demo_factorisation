@@ -1,15 +1,13 @@
-﻿to je_charge_la_feuille_x_fichier_excel_y_en_memoire with mysheet:empty, mypath:empty
-	log "Charger en mémoire la feuille '" & mysheet & "' du fichier Excel '" & mypath &"' ..."
+﻿to je_charge_la_feuille_x_du_fichier_excel_y_en_memoire with mysheet:empty, mypath:empty
+	logFct mysheet, mypath
 	Try
 		set myDB to {type:"excel", file:resourcePath(mypath)}
 		put table mysheet of myDB into mydata
 		"steps/excel_db/_lib"._set_inmemory_excel_table(mydata)
-		
 	Catch theException
-		
 		throw "Erreur lors du chargement du fichier Excel '" & mypath & "', feuille '" & mysheet &"'", "Vérifiez si le fichier existe dans le dossier Resources" & newline & theException
 	End try
 	
-	logSuccess "Charger en mémoire la feuille '" & mysheet & "' du fichier Excel '" & mypath &"' : OK"
-end je_charge_la_feuille_x_fichier_excel_y_en_memoire
+	logFct
+end je_charge_la_feuille_x_du_fichier_excel_y_en_memoire
 
