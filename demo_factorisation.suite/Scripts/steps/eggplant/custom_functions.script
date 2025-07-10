@@ -97,6 +97,37 @@ to logFct
 	end if
 end logFct
 
+to waitForAny listOfElementsToFind:[], maxWait:30
+	// Waits for any element in the list to be dislayed (text or images)
+	// No fancy options ➡️ if you need to use fancy option, then direcly use "waitfor"
+	// Examples: waitForAny ["my text", "path/to/my/reference_image", "another text"]
+	
+	// First, check that the parameters are correct
+	if listOfElementsToFind is not a list or maxWait is not a number then
+		Throw "Incorrect Parameter(s)", "waitForAny must receive a list and a number (max wait time); received this instead: " & newline & "listOfElementsToFind: " & listOfElementsToFind & newline & "maxWait: " & maxWait
+	end if
+	
+	// Then, try to find any of the element
+	set finalList to []
+
+	Repeat with each item myElement of listOfElementsToFind
+		set ocr_options to {}
+
+		// Is the element to find an image or a text?
+		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & myElement)
+		if file imgpath exists or file (imgpath & ".png") exists then
+			add properties {imageName:myElement} to ocr_options
+		else
+			add properties {text:myElement} to ocr_options
+		end if
+		
+		insert ocr_options into finalList
+	End repeat
+	
+	// log "waitfor" && maxWait &","&& finalList //DEBUG
+	waitfor maxWait, finalList
+end waitForAny
+
 // ==============================
 // TWEAKING STANDARD SENSETALK FUNCTIONS
 // ==============================
@@ -131,17 +162,27 @@ to waitfor timeout, arguments
 	End try
 end waitfor
 
-(*to ImageRectangle myparam
+to ImageRectangle myparam
+	// rewriting this function so that it has a default timeout of 30 seconds
 	set timeout to 30
+	
+	// myparam is either a property list, or the path of an image
+	if myparam is a property list then
+		add properties {waitfor:timeout} to myparam
+	else
+		set myparam to {imageName:myParam, waitfor:timeout}
+	end if
+	
 	Try
-		send waitfor timeout, myparam to SenseTalk // FIXME: use ImageFound instead; to be able to send a "waitfor". First, what parameters does the standard function receives? Must be the same
+		if not ImageFound(myParam) then
+			Throw "Image not found", myParam
+		end if
 		return FoundImageInfo().imageRectangle
 	Catch theException
 		throw theException
 	End try
 	
-end ImageRectangle*)
-
+end ImageRectangle
 
 
 to Throw with theException, thereason
@@ -166,45 +207,12 @@ to Throw with theException, thereason
 	send throw theException, thereason to SenseTalk
 end Throw
 
-to waitForAny listOfElementsToFind:[], maxWait:30, optional_ocr_options:{}
-	// WIP
-	// Waits for any element in the list to be dislayed
-	
-	// First, check that the parameters are correct
-	if listOfElementsToFind is not a list or maxWait is not a number then
-		Throw "Incorrect Parameter(s)", "waitForAny must receive a list and a number (max wait time); received this instead: " & newline & "listOfElementsToFind: " & listOfElementsToFind & newline & "maxWait: " & maxWait
-	end if
-	
-	// Then, try to find any of the element
-	set finalList to []
-
-	Repeat with each item myElement of listOfElementsToFind
-		set ocr_options to {}
-
-		// Is the element to find an image or a text?
-		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & myElement)
-		if file imgpath exists or file (imgpath & ".png") exists then
-			add properties {imageName:myElement} to ocr_options
-		else
-			add properties {text:myElement} to ocr_options
-		end if
-		
-		add properties optional_ocr_options to ocr_options
-		
-		insert ocr_options into finalList
-	End repeat
-	
-	// log "waitfor" && maxWait &","&& finalList //DEBUG
-	waitfor maxWait, finalList
-	
-end waitForAny
-
 to ScrollWheelUp scrollAmount
 	send ScrollWheelUp scrollAmount to SenseTalk
-	wait 0.5    
+	wait 0.5 // short "hard wait" to give time to the UI to stop moving
 end ScrollWheelUp
 
 to ScrollWheelDown scrollAmount
 	send ScrollWheelDown scrollAmount to SenseTalk
-	wait 0.5    
+	wait 0.5 // short "hard wait" to give time to the UI to stop moving
 end ScrollWheelDown
