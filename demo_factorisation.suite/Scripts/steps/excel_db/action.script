@@ -1,4 +1,6 @@
-﻿to je_charge_la_feuille_x_du_fichier_excel_y_en_memoire with mysheet:empty, mypath:empty
+﻿// Function names can also be in French.
+// Here, it's french for "I load the sheet X of the Excel file Y into the memory"
+to je_charge_la_feuille_x_du_fichier_excel_y_en_memoire with mysheet:empty, mypath:empty
 	logFct mysheet, mypath
 	Try
 		set myDB to {type:"excel", file:resourcePath(mypath)}

@@ -29,3 +29,10 @@ Pré-requis:
 2. Avoir un coffre Keepass avec ces identifiants dedans (dont l'OTP)
 3. Avoir une clé de cryptage en variable d'env système "EPF_SECRET_KEY"
 4. Avoir mis à jour la version cryptée du mot de passe de la BDD Keepass
+
+
+## Other notes
+When I code things here, I try to balance 2 things: 
+- [Parse, don't validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/) ; I want to use strong types, and I want my functions to fail as early as possible, while giving me enough contextual data to troubleshoot
+- Keep It Stupid Simple ; I don't want my function to have super complex parameters. I think that test automation is mostly a task for functional testers, who are not necessarilly experienced coders with a habit of manipulating Enums
+

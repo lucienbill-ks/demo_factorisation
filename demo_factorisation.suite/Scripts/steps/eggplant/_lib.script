@@ -1,104 +1,110 @@
-﻿to _parser_parametres_recherche_txt_ou_img_click with texte_ou_image_ou_options:empty, moreOptions:{}
-	// === paramètres obligatoires ===
-	set err_param_message to <<accepted formats for the parameter are:
+﻿to _parse_parameters_for_image_or_txt_search with text_or_image_or_options:empty, moreOptions:{}
+	// === mandatory parameters ===
+	set err_param_message to <<accepted formats for the parameters are:
 - text to find, or image name. Examples: "my text" ; "path/to/my_reference_image"
-- property list, such as:
+- property list (raw, or encapsulated in {}), such as:
    - {textOrImage:"my text or the path to my image", SearchRectangle:[0, 100, 200, 300]}
-   - {text:"my text", caseSensitive:true, SearchRectangle:[0, 100, 200, 300]}
+   - text:"my text", caseSensitive:true, SearchRectangle:[0, 100, 200, 300]
    - {imageName:"path/to/my_reference_image"}
+- text to find or image name, followed by OCR properties:
+  - "my text or the path to my image", SearchRectangle:[0, 100, 200, 300]
 >>
-	if texte_ou_image_ou_options is empty then Throw "Invalid parameter - must not be empty", err_param_message
+	if text_or_image_or_options is empty then Throw "Invalid parameter - must not be empty", err_param_message
 	
-	
-	// Gérer "on clique sur quoi ?" + erreur s'il manque un param
-	set texte_ou_image to empty
+	// "On what do we click":
+	// This complex looking code formats the parameters in a way
+	// That SenseTalk can understand
+	// + Erro handling
+	set text_or_image to empty
 	set number_of_txt_or_img_param to 0
 	set options to {}
 
-	if texte_ou_image_ou_options.textOrImage is not empty then
-		set texte_ou_image to texte_ou_image_ou_options.textOrImage
-		add properties texte_ou_image_ou_options to options
+	if text_or_image_or_options.textOrImage is not empty then
+		set text_or_image to text_or_image_or_options.textOrImage
+		add properties text_or_image_or_options to options
 		add 1 to number_of_txt_or_img_param
 	end if
 	
-	if the keys of texte_ou_image_ou_options contains "text" then
-		add properties {text:texte_ou_image_ou_options.text} to options
+	if the keys of text_or_image_or_options contains "text" then
+		add properties {text:text_or_image_or_options.text} to options
 		add 1 to number_of_txt_or_img_param
 	end if
-	if the keys of texte_ou_image_ou_options contains "image" then
-		add properties {imageName:texte_ou_image_ou_options.image} to options	
+	if the keys of text_or_image_or_options contains "image" then
+		add properties {imageName:text_or_image_or_options.image} to options	
 		add 1 to number_of_txt_or_img_param
 	end if	
-	if the keys of texte_ou_image_ou_options contains "imageName" then
-		add properties {imageName:texte_ou_image_ou_options.imageName} to options
+	if the keys of text_or_image_or_options contains "imageName" then
+		add properties {imageName:text_or_image_or_options.imageName} to options
 		add 1 to number_of_txt_or_img_param
 	end if
 	
 	if number_of_txt_or_img_param is 1 then //It's a property list
 		// OK
-		if texte_ou_image_ou_options.textOrImage is not empty then
-			set texte_ou_image to texte_ou_image_ou_options.textOrImage
+		if text_or_image_or_options.textOrImage is not empty then
+			set text_or_image to text_or_image_or_options.textOrImage
 			
 			// Is it an image or a text?
-			set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & texte_ou_image)
+			set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & text_or_image)
 			if file imgpath exists or file (imgpath & ".png") exists then
-				add properties {imageName:texte_ou_image} to options
+				add properties {imageName:text_or_image} to options
 			else
-				add properties {text:texte_ou_image} to options
+				add properties {text:text_or_image} to options
 			end if
 		end if
 		
 		
-		add properties texte_ou_image_ou_options to options
+		add properties text_or_image_or_options to options
 		remove property "textOrImage" from options
 		remove property "image" from options
 		
-		// NOTE : if there is something in moreOptions, this function can't see it
+		// NOTE : if there is something in moreOptions, this piece of code can't see it
+		(*
 		if moreOptions is not {} then
 			set str to "The function received 2 set of options for OCR or image search, only the first one is taken into account"
 			set str to str & newline & "these options are taken into account:" && options
 			set str to str & newline & "these options are taken ignored:" && moreOptions
 			LogWarning str
 		end if
+	    *)
 		
 	else if number_of_txt_or_img_param is 0 then
 		// It's not a propery list, it's a text
 		
 		// Is it an image or a text?
-		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & texte_ou_image_ou_options)
+		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & text_or_image_or_options)
 		if file imgpath exists or file (imgpath & ".png") exists then
-			add properties {imageName:texte_ou_image_ou_options} to options
+			add properties {imageName:text_or_image_or_options} to options
 		else
-			add properties {text:texte_ou_image_ou_options} to options			
+			add properties {text:text_or_image_or_options} to options			
 		end if
 		
 		if moreOptions is not a property list then
-			Throw "Invalid parameter", "the parameter moreOptions must be a property list. Received this instead:" && moreOptions
+			Throw "Invalid parameter", "the parameter moreOptions must be a property list. Received this instead:" && moreOptions & newline  & newline & err_param_message
 		end if
 		add properties moreOptions to options
-	else // more than 1 param
+		else // more than 1 param
 		set paramList to the params
 		delete param(0) from paramList
 		Throw "Too many parameters", "received this:" & newline & paramList & newline & newline & err_param_message
 	end if
 	
 	
-	// Si pas de timeout, on le définit à 30 secondes par défaut
+	// If no timeout has been defined, set it to a default value
 	add properties {waitfor:30} to options
 
-	//log "DEBUG" && texte_ou_image_ou_options
+	//log "DEBUG" && text_or_image_or_options
 	//log "DEBUG" && options
 	
 	return options
-end _parser_parametres_recherche_txt_ou_img_click
+end _parse_parameters_for_image_or_txt_search
 
 
-to _parser_parametres_recherche_txt_ou_img_waitfor with texte_ou_image_ou_options:empty, moreOptions:{}
-	set options to _parser_parametres_recherche_txt_ou_img_click(texte_ou_image_ou_options, moreOptions)
+to _parse_parameters_for_image_or_txt_search_waitfor with text_or_image_or_options:empty, moreOptions:{}
+	set options to _parse_parameters_for_image_or_txt_search(text_or_image_or_options, moreOptions)
 	
-	// séparer la propriété waitfor
+	// split the "waitfor" into a dedicated parameter
 	set waitfor to options.waitfor
 	remove property "waitfor" from options
 	
 	return [waitfor, options]
-end _parser_parametres_recherche_txt_ou_img_waitfor
+end _parse_parameters_for_image_or_txt_search_waitfor

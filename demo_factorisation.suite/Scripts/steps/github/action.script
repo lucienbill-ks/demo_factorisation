@@ -1,18 +1,20 @@
-﻿//Fichier pour les fonctions publiques de type action
+﻿//File for public functions that are actions, such as "I_do_this"
 
-to je_vais_sur_github_sans_me_connecter_a_un_compte
+to I_go_to_github_and_make_sure_I_am_disconnected
 	logFct
-	"steps/github/_lib"._ensure_disconnection {nouvelleSessionNavigateur:true}
+	"steps/github/_lib"._ensure_disconnection
 	logFct
-end je_vais_sur_github_sans_me_connecter_a_un_compte
+end I_go_to_github_and_make_sure_I_am_disconnected
 
-je_vais_sur_github_sans_me_connecter_a_un_compte
-
-to je_vais_sur_le_repo_de_test with repo_url:"steps/github/_lib"._get_default_test_repo()
+to I_go_to_the_test_repo with repo_url:empty	
 	logFct repo_url
 	
+	if repo_url is empty
+		set repo_url to "steps/github/_lib"._get_default_test_repo()
+	end if
+	
 	wait 1
-	TypeText f6 // revient à cliquer dans la barre d'URL
+	TypeText f6 // this is like clicking on the URL bar
 	wait 0.5
 	typeText repo_url, returnkey
 	wait 2
@@ -20,28 +22,28 @@ to je_vais_sur_le_repo_de_test with repo_url:"steps/github/_lib"._get_default_te
 	set validationStr to repo_url
 	delete "https://github.com/" from validationStr
 	
-	waitfor 10, text:validationStr, SearchRectangle: [0,93,RemoteScreenSize().x, 300]
-	
-	logFct
-end je_vais_sur_le_repo_de_test
+	waitfor 30, text:validationStr, SearchRectangle: [0,93,RemoteScreenSize().x, 300]
 
-to je_tente_d_ouvrir_vs_code_online
+	logFct
+end I_go_to_the_test_repo
+
+to I_attempt_to_open_vs_code_online
 	logFct
 	typeText "."
 	wait 2
 	logFct
-end je_tente_d_ouvrir_vs_code_online
+end I_attempt_to_open_vs_code_online
 
-to je_m_authentifie_a_github
+to I_log_into_github
 	logFct
-	cliquer "Sign in"
+	do_click "Sign in"
 	wait 1
 	WaitFor 10, text:"Username or email address", SearchRectangle:empty
 	
-	"steps/keepass/action".j_ouvre_le_coffree_keepass
-	"steps/keepass/action".j_utilise_autotype
+	"steps/keepass/action".I_open_the_keepass_vault
+	"steps/keepass/action".I_use_the_autotype_for_the_credentials
 	WaitFor 10, text:"Two-factor authentication"
-	"steps/keepass/action".je_copie_colle_le_code_otp_de_l_entree_selectionnee
+	"steps/keepass/action".I_copy_paste_the_OTP_code_of_the_current_entry
 	wait 5
 	WaitFor 30, text:"Pull requests"
 	if ImageFound(text:"Sign in", waitFor:2) then
@@ -49,10 +51,10 @@ to je_m_authentifie_a_github
 	end if
 	
 	logFct
-end je_m_authentifie_a_github
+end I_log_into_github
 
-to je_me_deconnecte_de_github
+to I_disconnect_from_github
 	logFct
-	"steps/github/_lib"._ensure_disconnection {nouvelleSessionNavigateur:false}
+	"steps/github/_lib"._ensure_disconnection
 	logFct
-end je_me_deconnecte_de_github
+end I_disconnect_from_github

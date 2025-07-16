@@ -6,41 +6,41 @@
 
 // TODO  : demander à Karsten, Seb me dit qu'il a un truc
 (*
-@Snippet cliquer [texte ou image]
+@Snippet do_click [texte ou image]
 @Template
-cliquer "[@texte ou image]"
+do_click "[@texte ou image]"
 @Documentation
 epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
 @Description
-Cliquer sur un texte ou sur une image.
+do_click sur un texte ou sur une image.
 
 Exemples :
-Cliquer "mon texte"
-Cliquer "chemin/vers/une/image.png"
-Cliquer "chemin/vers/une/collection"
+do_click "mon texte"
+do_click "chemin/vers/une/image.png"
+do_click "chemin/vers/une/collection"
 
 Exemple avec des paramètres avancés : 
-Cliquer {textOrImage:"mon texte", waitfor: 5, caseSensitive : true, validWords : "*"}
+do_click {textOrImage:"mon texte", waitfor: 5, caseSensitive : true, validWords : "*"}
 
 Pour plus d'exemples de paramètres, voir https://docs.eggplantsoftware.com/studio/epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
 *)
-to cliquer with texte_ou_image_ou_options:empty, moreOptions:{}
-	set options to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_click(texte_ou_image_ou_options, moreOptions)
+to do_click with text_or_img_or_options:empty, moreOptions:{}
+	set options to "steps/eggplant/_lib"._parse_parameters_for_image_or_txt_search(text_or_img_or_options, moreOptions)
 	click options
 	
-end cliquer
+end do_click
 
 
-to cliquerDroit with texte_ou_image_ou_options:empty, moreOptions:{}
-	set options to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_click(texte_ou_image_ou_options, moreOptions)
+to do_RightClick with text_or_img_or_options:empty, moreOptions:{}
+	set options to "steps/eggplant/_lib"._parse_parameters_for_image_or_txt_search(text_or_img_or_options, moreOptions)
 	RightClick options
-end cliquerDroit
+end do_RightClick
 
-to attendre with texte_ou_image_ou_options, moreOptions:{}
-	set params to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_waitfor(texte_ou_image_ou_options, moreOptions)
+to do_waitfor with text_or_img_or_options, moreOptions:{}
+	set params to "steps/eggplant/_lib"._parse_parameters_for_image_or_txt_search_waitfor(text_or_img_or_options, moreOptions)
 	waitfor the first item of params, the second item of params
 	// log "waitfor" &&  the first item of params &"," && the second item of params // DEBUG
-end attendre
+end do_waitfor
 
 to logFct 
 	// Goal: to log the entering / exiting of functions
@@ -186,6 +186,9 @@ end ImageRectangle
 
 
 to Throw with theException, thereason
+	// This is a rewrite of the standard "Throw" function,
+	// but it writes addisional callstack information in the error message
+
 	set stk to the callStack
 	delete the last item of stk
 	set my_stack to "Call stack:" & newline

@@ -1,5 +1,5 @@
 ﻿// But du script : exécuter tous les tests d'un dossier 
-"steps/common/autre".j_execute_tous_les_test_du_dossier_x  "tests/group_of_tests"
+"steps/common/action".I_run_all_tests_of_folder_x  "tests/group_of_tests"
 
 (*set mondossier to  "tests/group_of_tests"
 if mondossier is empty then Throw "Paramètre incorrect", "Le parametre mondossier est obligatoire"

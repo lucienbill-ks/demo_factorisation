@@ -1,35 +1,27 @@
-﻿//Fichier pour les fonctions internes
+﻿//File for internal functions. Anything that does not appear explicitely in a "Gherkin" style test
 
 to _get_default_test_repo
 	return "https://github.com/lucienbill/obsidian-daily-notes"
 end _get_default_test_repo
 
-to _ensure_disconnection with myOptions:{}
-	logFct myOptions
-	// === Valeurs et comportement par défaut ===
-	// Ouvrir une nouvelle session de navigateur
-	if myOptions.nouvelleSessionNavigateur is empty then
-		set myOptions.nouvelleSessionNavigateur to false
-	end if
-	
+to _ensure_disconnection
+	logFct openNewChromeSession
+	// === Default values and behaviours ===
 	set url_github to "https://github.com/logout"
 	
-	// ============================
-	if myOptions.nouvelleSessionNavigateur is true then
-		"steps/chrome_browser/action".j_ouvre_une_nouvelle_session_chrome {startUrl: url_github}
-	else
-		// Sélectionner la barre d'URL
-		typeText F6
-		wait 0.5
-		typeText url_github, returnKey
-	end if
+	// Select the URL bar
+	typeText escapeKey
+	moveto [500,500]
+	typeText F6
+	wait 0.5
+	typeText url_github, returnKey
 	
-	wait 4
+	wait 2
 	
-	// S'assurer qu'on est sur github, pas logué
+	// Make sure that we are on GitHub, and not logged-in
 	repeat 10 times
 		if ImageFound(text:"Select account to sign out", waitFor:0) then
-			cliquer "Sign out from all accounts"
+			do_click "Sign out from all accounts"
 			wait 2
 		end if
 		
@@ -41,5 +33,5 @@ to _ensure_disconnection with myOptions:{}
 		wait 2
 	end repeat
 	
-	Throw "Erreur d'accès ou de déconnexion à github", "erreur lors de l'accès à gitHub sans compte logué, ou de la déconnexion"
+	Throw "Failed to access Github in a 'disconnected' state", "When accessing GitHub or trying to log out, an error occured"
 end _ensure_disconnection
