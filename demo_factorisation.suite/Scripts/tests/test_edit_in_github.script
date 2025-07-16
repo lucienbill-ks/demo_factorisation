@@ -1,7 +1,7 @@
 ﻿// Feature: open VS Code Online from a github repo
 
 BeginTestCase "Attempt to open VS Code online without being logged into Github"
-"steps/common/validation".I_check_that_the_Windows_SUT_is_available // FIXME : validation
+"steps/common/validation".I_check_that_the_Windows_SUT_is_available
 "steps/chrome_browser/action".I_open_chrome
 "steps/github/action".I_go_to_github_and_make_sure_I_am_disconnected
 "steps/github/action".I_go_to_the_test_repo "https://github.com/lucienbill/obsidian-daily-notes"
