@@ -1,81 +1,72 @@
-﻿//Fichier pour les fonctions publiques de type action
-to je_verifie_que_le_SUT_est_disponible
-	logFct
-	// note : nécessaire pour DAI, qui ouvre/ferme le SUT pour chaque test
-	set max_wait_time to 120 // 2 minutes
-	set wait_interval to 5
-	set max_repeats to round(max_wait_time/wait_interval)
-	
-	set is_sut_open to false
-	repeat max_repeats times
-		if imagefound(imagename:"apps/windows/windows_logo_taskbar", waitfor:0)
-			set is_sut_open to true
-			exit repeat
-		end if
-		wait wait_interval
-	end repeat
-	
-	if not is_sut_open then throw "Le SUT n'est pas disponiblee"
-	
-	(*
-	if imagefound(imagename:"apps/windows/cross_error_message", waitfor:20) then
-		typeText returnkey
-		wait 0.5
-	end if
-	*)
-	
-	logFct
-end je_verifie_que_le_SUT_est_disponible
+﻿//File for public functions that are actions, such as "I_do_this"
 
-to j_execute_une_commande_windows_r with myCmd
+to I_execute_this_windows_r_command with myCmd
 	logFct myCmd
 	TypeText windowsKey, "r"
 	wait 0.5
 	typeText myCmd, returnKey
 	wait 0.5
 	logFct
-end j_execute_une_commande_windows_r
+end I_execute_this_windows_r_command
 
 
-to je_lance_le_navigateur_x with myBrowser, myOptions:{}
-	logFct myBrowser, myOptions
-	// initialisation de la liste de navigateurs reconnus
-	set browserList to {}
-
-	set chromeName to "chrome"
+to I_launch_browser_x_at_url_y with myBrowser, myOptionalURL:"about:blank"
+	logFct myBrowser, myOptionalURL
+	
+	// I use these as constants, to avoid making any typo. Might be overkill though
+	set C_chrome to "chrome"
+	set C_chromeIncognito to "chrome_incognito"
 	// set edgeName to "edge"
 	
-	set browserList.(chromeName) to "chrome.exe"
+	// setting up the list of known browsers
+	set browserList to {}
+	set browserList.(C_chrome) to "chrome.exe"
+	set browserList.(C_chromeIncognito) to "chrome.exe"
 	// set browserList.(edgeName) to "msedge.exe"
 	
-	// Controle des paramètres
+	// Checking the parameters
 	set browserExecName to browserList.(myBrowser) 
-	if browserExecName is empty then Throw "Navigateur inconnu", "Le navigateur '"&myBrowser&"' ne fait pas partie de la liste des navigateurs connus " && browserList
+	if browserExecName is empty then Throw "Unknown", "The browser '"&myBrowser&"' does not belong the list of known browsers:" && browserList
 	
-	// Valeurs par défauts
-	if myOptions.startUrl is empty then
-		set myOptions.startUrl to "about:blank"
-	end if
-	if myOptions.startMaximized is empty then
-		set myOptions.startMaximized to true
-	end if
-	if myOptions.incognito is empty then
-		set myOptions.incognito to false
-	end if
 	
-	// Chrome
-	if myBrowser is chromeName then
-		set myCmd to browserList.(myBrowser) && myOptions.startUrl
-		if myOptions.startMaximized is true then
-			set myCmd to myCmd && "--start-maximized"
-		end if
-		if myOptions.incognito is true then
-			set myCmd to myCmd && "--incognito"
-		end if
-	end if
+	// depending on which Browser is selected, build the instruction to run
 	
-	j_execute_une_commande_windows_r myCmd
+	If myBrowser equals ...
+		... C_chrome :
+			set myCmd to browserList.(myBrowser) && myOptionalURL && "--start-maximized"
+		... C_chromeIncognito :
+			set myCmd to browserList.(myBrowser) && myOptionalURL && "--start-maximized" && "--incognito"
+	End if
+	
+	// launch it
+	I_execute_this_windows_r_command myCmd
 	wait 2
-	Attendre "browser/"&myBrowser&"/reloadIcon"
+	
+	// Wait for it to be fully launched
+	do_waitfor "browser/"&myBrowser&"/reloadIcon"
+	
 	logFct
-end je_lance_le_navigateur_x
+end I_launch_browser_x_at_url_y
+
+to I_run_all_tests_of_folder_x with myFolder:empty
+	if myFolder is empty then Throw "Missing parameter", "parameter 'myFolder' is mandatory"
+	
+	set scriptDirPath to the resolvedfilePath of ( ResourcePath() & "/../Scripts/" & myFolder)
+	
+	set listOfTestsToRun to files of scriptDirPath
+	
+	if the number of items of listOfTestsToRun is 0 then
+		Throw "No tests to run", "No script found in" && myFolder
+		
+	end if
+	
+	Repeat with each item myTest of listOfTestsToRun
+		RunWithNewResults myFolder & "/" & myTest
+		
+		// if the result's status is "failure" then
+		// LogError "test failed. Performing cleanup action"
+		// some actions
+		// end if	
+	End repeat
+	
+end I_run_all_tests_of_folder_x

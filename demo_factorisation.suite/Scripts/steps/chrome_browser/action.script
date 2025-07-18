@@ -1,24 +1,29 @@
-﻿//Fichier pour les fonctions publiques de type action
+﻿//File for public functions that are actions, such as "I_do_this"
 
-to j_ouvre_une_nouvelle_session_chrome with myOptions:{}
-	logFct myOptions
-	"steps/common/action".je_lance_le_navigateur_x "chrome", myOptions
+to I_open_chrome with optionalURL:"about:blank"
+	logFct optionalURL
+	"steps/common/action".I_launch_browser_x_at_url_y "chrome", optionalURL
 	logFct
-end j_ouvre_une_nouvelle_session_chrome
+end I_open_chrome
 
-to je_ferme_chrome
+to I_close_chrome
 	logFct
 	typeText altKey, f4
 	wait 1
-	repeat 5 times
-		if not ImageFound(imageName:"browser/chrome/icon_taskbar", waitFor:2) then
-			logFct
-			return
+	
+	set is_ok to false
+	repeat 10 times
+		if not ImageFound(imageName:"browser/chrome/icon_taskbar", waitFor:1) then
+			set is_ok to true
+			exit repeat
 		end if
 		
 		wait 2
 	end repeat
 	
-	Throw "Quitter Chrome : échec", "L'icone de Chrome est encore présente dans la barre des taches"
+	if not is_ok then
+		Throw "Failed to quit Chrome", "It looks like the Chrome icon is still visible in the task bar"
+	end if
 	
-end je_ferme_chrome
+	logFct
+end I_close_chrome

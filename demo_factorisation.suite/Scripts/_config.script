@@ -1,13 +1,15 @@
-﻿// Penser à configurer la suite pour que ce script s'exécute avant chaque exécition
-// de script ou de portion de code : 
-// Dans la suite : cliquer sur "Settings..." (en bas à gauche)
-// Puis cocher ces cases :
+﻿// In the Suite's Settings, make sure that this scripts is executed firs:
+// Click on "Settings..." (bottom left of the editor window)
+// Then check these bixes:
 //   - "Before each run, execute this script:"
 //   - "Before running a selection, execute:"
-// Dans le dropdownmenu de ces éléments, sélectionner "_config.script"
+// In the dropdown menu of the elements, select "_config.script"
 
-set the sendShiftForCaps to no // for azerty keyboards
+########## This part is specific to my machine (French laptop) ##########
+set the sendShiftForCaps to no // for my azerty keyboard
 set the ScriptLogging to yes
+########## End my the part that is specific to my machine ##########
 
-// importer les fonctions customisées (note : n'apparaitront pas dans l'auto completion)
+// import custom functions
+// (note: they don't appear natively in the autocompletion, I added suite snippets manually)
 Start Using "steps/eggplant/custom_functions"

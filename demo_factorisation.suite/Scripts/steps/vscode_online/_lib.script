@@ -1,3 +1,5 @@
-﻿to _get_default_newfile_name
-	return "newfile.md"
+﻿//File for internal functions. Anything that does not appear explicitely in a "Gherkin" style test
+
+to _get_default_newfile_name
+	return "aubergine_newfile.md"
 end _get_default_newfile_name

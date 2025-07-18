@@ -1,4 +1,4 @@
-﻿//Fichier pour les fonctions publiques de type validation
+﻿//File for public functions that are validations, such as "I_check_that_x"
 to je_verifie_que_personne_ne_s_appelle_x_dans_la_bdd_excel with myname:empty
 	log "vérifier que personne n'a pour nom '" & myname & "' dans la BDD Excel en mémoire ..."
 	set mydata to "steps/excel_db/_lib"._get_inmemory_excel_table
