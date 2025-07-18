@@ -1,4 +1,4 @@
-﻿// Some basic unit tests
+﻿// Some basic unit tests, to make sure my complex code actually works
 Connect serverID:"TutorialSUT", portNum:5900
 
 set counter to 0

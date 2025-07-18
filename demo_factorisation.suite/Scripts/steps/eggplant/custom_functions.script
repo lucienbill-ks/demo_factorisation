@@ -1,29 +1,9 @@
-﻿// But de ce fichier : définir des fonctions personnalisés, essayer de faire encore plus simplle que SenseTalk
+﻿// These are some custom functions to exten SenseTalk's native capabilitie
 
 // =======================
 // CUSTOM FUNCTIONS
 // =======================
 
-// TODO  : demander à Karsten, Seb me dit qu'il a un truc
-(*
-@Snippet do_click [texte ou image]
-@Template
-do_click "[@texte ou image]"
-@Documentation
-epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
-@Description
-do_click sur un texte ou sur une image.
-
-Exemples :
-do_click "mon texte"
-do_click "chemin/vers/une/image.png"
-do_click "chemin/vers/une/collection"
-
-Exemple avec des paramètres avancés : 
-do_click {textOrImage:"mon texte", waitfor: 5, caseSensitive : true, validWords : "*"}
-
-Pour plus d'exemples de paramètres, voir https://docs.eggplantsoftware.com/studio/epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
-*)
 to do_click with text_or_img_or_options:empty, moreOptions:{}
 	set options to "steps/eggplant/_lib"._parse_parameters_for_image_or_txt_search(text_or_img_or_options, moreOptions)
 	click options
@@ -68,7 +48,7 @@ to logFct
 		set param_stack to []
 	end if
 	
-	// build the string to dispplay
+	// build the string to display
 	set current_function to the Handler of the second-to-last item of the callStack 
 	
 	// Are we entering or leaving the function?
@@ -99,7 +79,7 @@ end logFct
 
 to waitForAny listOfElementsToFind:[], maxWait:30
 	// Waits for any element in the list to be dislayed (text or images)
-	// No fancy options ➡️ if you need to use fancy option, then direcly use "waitfor"
+	// N	o fancy options ➡️ if you need to use fancy option, then direcly use "waitfor"
 	// Examples: waitForAny ["my text", "path/to/my/reference_image", "another text"]
 	
 	// First, check that the parameters are correct
@@ -128,6 +108,19 @@ to waitForAny listOfElementsToFind:[], maxWait:30
 	waitfor maxWait, finalList
 end waitForAny
 
+to get_rectangle_between_2_elements topLeft_element:empty, bottomRightElement:empty
+	// This function draws a rectangle between top left of first element and bottom right of second element
+	// Each element can be a text or an image, but no fancy OCR options.
+	// If you need something fancier, use something else
+	
+	do_waitfor topLeft_element
+	set TL to FoundImageInfo().imageRectangle.topLeft
+	do_waitfor bottomRightElement
+	set BR to FoundImageInfo().imageRectangle.bottomRight
+	
+	return [TL, BR]
+end get_rectangle_between_2_elements
+
 // ==============================
 // TWEAKING STANDARD SENSETALK FUNCTIONS
 // ==============================
@@ -139,7 +132,7 @@ to click myparameters
 		send click myparameters to SenseTalk
 		// wait 0.5
 	Catch theException
-		throw theException
+		throw theException // Goal: make use of the extra stack info of the modified "Throw" function
 	End try
 end click
 
@@ -149,7 +142,7 @@ to RightClick myparameters
 		send RightClick myparameters to SenseTalk
 		// wait 0.5
 	Catch theException
-		throw theException
+		throw theException // Goal: make use of the extra stack info of the modified "Throw" function
 	End try
 end RightClick
 
@@ -158,7 +151,7 @@ to waitfor timeout, arguments
 		put "waitfor" && timeout & "," && arguments
 		send waitfor timeout, arguments to SenseTalk
 	Catch theException
-		throw theException
+		throw theException // Goal: make use of the extra stack info of the modified "Throw" function
 	End try
 end waitfor
 
@@ -188,7 +181,7 @@ end ImageRectangle
 to Throw with theException, thereason
 	// This is a rewrite of the standard "Throw" function,
 	// but it writes addisional callstack information in the error message
-
+	
 	set stk to the callStack
 	delete the last item of stk
 	set my_stack to "Call stack:" & newline

@@ -11,6 +11,7 @@ to I_go_to_the_test_repo with repo_url:empty
 	
 	if repo_url is empty
 		set repo_url to "steps/github/_lib"._get_default_test_repo()
+		log "did not receive a repo url, using this one instead:" && repo_url
 	end if
 	
 	wait 1

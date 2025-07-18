@@ -1,8 +1,10 @@
 ﻿to _parse_parameters_for_image_or_txt_search with text_or_image_or_options:empty, moreOptions:{}
+	// This is complex code, you probably don't want to touch it
+
 	// === mandatory parameters ===
 	set err_param_message to <<accepted formats for the parameters are:
 - text to find, or image name. Examples: "my text" ; "path/to/my_reference_image"
-- property list (raw, or encapsulated in {}), such as:
+- property list for OCR or image search (raw, or encapsulated in {}), such as:
    - {textOrImage:"my text or the path to my image", SearchRectangle:[0, 100, 200, 300]}
    - text:"my text", caseSensitive:true, SearchRectangle:[0, 100, 200, 300]
    - {imageName:"path/to/my_reference_image"}
@@ -14,7 +16,7 @@
 	// "On what do we click":
 	// This complex looking code formats the parameters in a way
 	// That SenseTalk can understand
-	// + Erro handling
+	// + Error handling
 	set text_or_image to empty
 	set number_of_txt_or_img_param to 0
 	set options to {}
@@ -100,6 +102,8 @@ end _parse_parameters_for_image_or_txt_search
 
 
 to _parse_parameters_for_image_or_txt_search_waitfor with text_or_image_or_options:empty, moreOptions:{}
+	// This is complex code, you probably don't want to touch it
+
 	set options to _parse_parameters_for_image_or_txt_search(text_or_image_or_options, moreOptions)
 	
 	// split the "waitfor" into a dedicated parameter
