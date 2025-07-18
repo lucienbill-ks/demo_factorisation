@@ -1,9 +1,9 @@
 ﻿//File for public functions that are validations, such as "I_check_that_x"
 
-to I_check_that_vs_code_onlinde_is_opened
+to I_check_that_vs_code_online_is_opened
 	logFct
 	WaitFor 30.0, "apps/vscode_online/topleft_logo"
 	WaitFor 30.0, "apps/vscode_online/octocat_logo"
 	logFct
-end I_check_that_vs_code_onlinde_is_opened
+end I_check_that_vs_code_online_is_opened
 

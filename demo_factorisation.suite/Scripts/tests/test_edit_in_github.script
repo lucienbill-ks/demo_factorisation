@@ -14,11 +14,10 @@ EndTestCase "Attempt to open VS Code online without being logged into Github"
 BeginTestCase "Log into Github, then open VS Code online"
 "steps/github/action".I_log_into_github
 "steps/github/action".I_attempt_to_open_vs_code_online
-"steps/vscode_online/validation".I_check_that_vs_code_onlinde_is_opened
+"steps/vscode_online/validation".I_check_that_vs_code_online_is_opened
 "steps/vscode_online/action".I_create_a_new_file
 "steps/vscode_online/action".I_delete_the_new_file
 EndTestCase "Log into Github, then open VS Code online"
-
 //-----
 
 BeginTestCase "Close everything"
