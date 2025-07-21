@@ -1,11 +1,17 @@
-﻿//Fichier pour les fonctions publiques de type validation
+﻿//File for public functions that are validations, such as "I_check_that_x"
 
-to je_verifie_que_vscode_online_ne_s_ouvre_pas with repo_url:"steps/github/_lib"._get_default_test_repo()
+to I_check_that_vs_code_is_not_opened with repo_url:empty
 	logFct repo_url
+
+	if repo_url is empty then
+		set repo_url to "steps/github/_lib"._get_default_test_repo()
+		log "did not receive a repo url, using this one instead:" && repo_url
+	end if
+
 	delete "https://" from repo_url
 	waitfor 10, text:repo_url, SearchRectangle: [0,0,RemoteScreenSize().x, 93]
 	delete "github.com/" from repo_url
 	waitfor 10, text:repo_url, SearchRectangle: [0,93,RemoteScreenSize().x, 300]
 	logFct	
-end je_verifie_que_vscode_online_ne_s_ouvre_pas
+end I_check_that_vs_code_is_not_opened
 

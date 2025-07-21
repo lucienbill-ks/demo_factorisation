@@ -1,9 +1,9 @@
-﻿//Fichier pour les fonctions publiques de type action
+﻿//File for public functions that are actions, such as "I_do_this"
 
-to j_ouvre_le_coffree_keepass with vaultPath:"C:\Users\lucibill\OneDrive - Keysight Technologies\Documents\Keepass\test-EPF.kdbx"
+to I_open_the_keepass_vault with vaultPath:"C:\Users\lucibill\OneDrive - Keysight Technologies\Documents\Keepass\test-EPF.kdbx"
 	logFct vaultPath
 	set myProgram to <<"C:\Program Files\KeePass Password Safe 2\KeePass.exe">> 
-	"steps/common/action".j_execute_une_commande_windows_r myProgram && quote & vaultPath & quote
+	"steps/common/action".I_execute_this_windows_r_command myProgram && quote & vaultPath & quote
 	
 	WaitFor 8.0, "apps/keepass/masterpassword_input_logo"
 	wait 0.5
@@ -19,18 +19,18 @@ to j_ouvre_le_coffree_keepass with vaultPath:"C:\Users\lucibill\OneDrive - Keysi
 	WaitFor 20, "apps/keepass/icon_lockworkspace"
 	
 	logFct	
-end j_ouvre_le_coffree_keepass
+end I_open_the_keepass_vault
 
-to j_utilise_autotype with myEntry:"GitHub with OTP"
-	log "Trouver l'entrée" && myEntry && "dans Keepass et utiliser l'auto-type ..."
-	cliquer myEntry
+to I_use_the_autotype_for_the_credentials with myEntry:"GitHub with OTP"
+	logFct myEntry
+	do_click myEntry
 	wait 0.5
 	TypeText controlKey, "v"
 	wait 5	
-	logSuccess "Trouver l'entrée" && myEntry && "dans Keepass et utiliser l'auto-type : OK"
-end j_utilise_autotype
+	logFct
+end I_use_the_autotype_for_the_credentials
 
-to je_copie_colle_le_code_otp_de_l_entree_selectionnee
+to I_copy_paste_the_OTP_code_of_the_current_entry
 	logFct
 	TypeText altKey, tabKey
 	wait 2
@@ -39,21 +39,20 @@ to je_copie_colle_le_code_otp_de_l_entree_selectionnee
 	
 	wait 0.5
 	
-	
 	TypeText altKey, tabKey
 	wait 1
 	TypeText shiftKey, insertkey
 	TypeText returnKey
 	
 	logFct
-end je_copie_colle_le_code_otp_de_l_entree_selectionnee
+end I_copy_paste_the_OTP_code_of_the_current_entry
 
-to je_ferme_keepass
+to I_close_Keepass
 	logFct
 	typeText altKey, f4
 	wait 1
-	repeat 5 times
-		if not ImageFound(imageName:"apps/keepass/icon_taskbar", waitFor:2) then
+	repeat 10 times
+		if not ImageFound(imageName:"apps/keepass/icon_taskbar", waitFor:1) then
 			logFct
 			return
 		end if
@@ -61,5 +60,5 @@ to je_ferme_keepass
 		wait 2
 	end repeat
 	
-	Throw "Quitter Keepass : échec", "L'icone de Keepass est encore présente dans la barre des taches"
-end je_ferme_keepass
+	Throw "Failed to quit Keepass", "The keepass icon is still visible in the taskbar"
+end I_close_Keepass

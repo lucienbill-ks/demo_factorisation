@@ -1,36 +1,56 @@
-﻿to je_cree_un_nouveau_fichier
+﻿//File for public functions that are actions, such as "I_do_this"
+
+to I_create_a_new_file
 	logFct
 	wait 3
 	MoveTo text:"en-US", waitFor:30
-	cliquer "apps/vscode_online/create_new_file"
+	do_click "apps/vscode_online/create_new_file"
 	wait 2
-	// note : j'utilise un "getter" plutot qu'un appel direct à la variable globale, pour 2 raisons : 
-	// 1) avec la fonction, j'ai l'auto-completion.
-	// 2) avec la fonction, si je fais une faute de frappe, ça plante. Tandis qu'avec une variable,
-	//     si je fais une faute de frappe dans le nom, ça retourne une valeur vide et ça ne plante
-	//     pas directement, mais plus tard (c'est plus compliqué à débogger)
-	typeText "steps/vscode_online/_lib"._get_default_newfile_name(), returnkey
+	
+	// Note: I use a "getter" here. I could use global variable, but I'd rather have
+	// a "getter/setter" system, which works well with autocompletion and
+	// will fail if I make a typo (which makes debugging easier)
+	set filename to "steps/vscode_online/_lib"._get_default_newfile_name()
+	
+	typeText filename, returnkey
 	wait 2
 	typeText "this is a new file!", returnkey
 	WaitFor 4, text:"this is a new file!"
 	logFct	
-end je_cree_un_nouveau_fichier
+end I_create_a_new_file
 
-to je_supprime_le_nouveau_fichier
+to I_delete_the_new_file
 	logFct
-	cliquerDroit "steps/vscode_online/_lib"._get_default_newfile_name(), SearchRectangle:[0,92,350, RemoteScreenSize().y]
+	set filename to "steps/vscode_online/_lib"._get_default_newfile_name()
+	
+	// do_RightClick filename, SearchRectangle:[0,92,350, RemoteScreenSize().y]
+	
+	log "Right click on the '" & filename & "' text that is the closest to the left of the screen"
+	set myList to EveryImageLocation(text:filename)
+	set ref_coord to RemoteScreenSize()
+	Repeat with each item myCoord of myList
+		// keep the one that is more on the left
+		if myCoord.x is less than ref_coord
+			set ref_coord to myCoord
+		end if
+	End repeat
+	
+	RightClick ref_coord
+	
+	// Delete the file
 	wait 1
-	cliquer "Delete Permanently", waitfor: 5, SearchRectangle:empty
+	do_click "Delete Permanently"
 	wait 1
-	Attendre "Are you sure you want to permanently delete"
+	do_waitfor "Are you sure you want to permanently delete"
 	typeText returnkey	
 	logFct
-end je_supprime_le_nouveau_fichier
+end I_delete_the_new_file
 
-to je_ferme_vscode_online
+to I_close_VS_Code_online
 	logFct
 	typeText controlKey, "w"
 	
+	wait 0.5
 	if ImageFound(text:"Leave site?", waitFor:4) then
 		typeText returnKey
 	end if
@@ -45,6 +65,6 @@ to je_ferme_vscode_online
 		wait 2
 	End repeat
 	
-	if not isExitOK then Throw "Impossible de quitter VS Code Online", "L'opération a échoué"
+	if not isExitOK then Throw "Failed to quit VS Code Online", "It's still opened"
 	logFct
-end je_ferme_vscode_online
+end I_close_VS_Code_online

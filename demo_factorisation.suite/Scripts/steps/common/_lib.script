@@ -1,15 +1,8 @@
-﻿//Fichier pour les fonctions internes
+﻿//File for internal functions. Anything that does not appear explicitely in a "Gherkin" style test
 
-
-(*
-Note : la logique de ces fonctions est "parse, don't validate"
-https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/
-En bref : je fais en sorte que mes fautes de frappes dans le code déclenchent des erreurs
-tot, pour faciliter le déboggage.
-*)
 
 to _check_value_x_is_in_list_y with myValue:"", myList:[]
-	if myValue is not in myList then Throw "Valeur inconnue", "la valeur '" & myValue & "' ne fait pas partie de la liste" && myList
+	if myValue is not in myList then Throw "Value is not in list", "The value '" & myValue & "' does not belong to this list:" && myList
 	return myValue
 end _check_value_x_is_in_list_y
 
@@ -21,7 +14,7 @@ to _get_cryptkey
 	// set secretKey to  GetVaultValue("EPF_SECRET_KEY")
 	
 	if secretKey is empty then
-		Throw "Variable d'environnement manquante", "La variable d'environnement système 'EPF_SECRET_KEY' ne doit pas etre vide"
+		Throw "Missing env. variable", "the environment variable 'EPF_SECRET_KEY' must not be empty"
 	end if
 	
 	return secretKey

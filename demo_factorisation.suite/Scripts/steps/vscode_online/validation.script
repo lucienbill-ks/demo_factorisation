@@ -1,9 +1,9 @@
-﻿to je_verifie_que_vscode_online_est_ouvert
-	log "Vérifier que VS Code online est ouvert ..."
+﻿//File for public functions that are validations, such as "I_check_that_x"
+
+to I_check_that_vs_code_online_is_opened
+	logFct
 	WaitFor 30.0, "apps/vscode_online/topleft_logo"
 	WaitFor 30.0, "apps/vscode_online/octocat_logo"
-	
-	LogSuccess "Vérifier que VS Code online est ouvert : OK"
-	
-end je_verifie_que_vscode_online_est_ouvert
+	logFct
+end I_check_that_vs_code_online_is_opened
 

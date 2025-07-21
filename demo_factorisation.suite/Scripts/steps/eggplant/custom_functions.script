@@ -1,46 +1,26 @@
-﻿// But de ce fichier : définir des fonctions personnalisés, essayer de faire encore plus simplle que SenseTalk
+﻿// These are some custom functions to exten SenseTalk's native capabilitie
 
 // =======================
 // CUSTOM FUNCTIONS
 // =======================
 
-// TODO  : demander à Karsten, Seb me dit qu'il a un truc
-(*
-@Snippet cliquer [texte ou image]
-@Template
-cliquer "[@texte ou image]"
-@Documentation
-epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
-@Description
-Cliquer sur un texte ou sur une image.
-
-Exemples :
-Cliquer "mon texte"
-Cliquer "chemin/vers/une/image.png"
-Cliquer "chemin/vers/une/collection"
-
-Exemple avec des paramètres avancés : 
-Cliquer {textOrImage:"mon texte", waitfor: 5, caseSensitive : true, validWords : "*"}
-
-Pour plus d'exemples de paramètres, voir https://docs.eggplantsoftware.com/studio/epf-working-with-optical-character-recognition-ocr/#parameterizing-ocr
-*)
-to cliquer with texte_ou_image_ou_options:empty, moreOptions:{}
-	set options to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_click(texte_ou_image_ou_options, moreOptions)
+to do_click with text_or_img_or_options:empty, moreOptions:{}
+	set options to "steps/eggplant/_lib"._parse_parameters_for_image_or_txt_search(text_or_img_or_options, moreOptions)
 	click options
 	
-end cliquer
+end do_click
 
 
-to cliquerDroit with texte_ou_image_ou_options:empty, moreOptions:{}
-	set options to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_click(texte_ou_image_ou_options, moreOptions)
+to do_RightClick with text_or_img_or_options:empty, moreOptions:{}
+	set options to "steps/eggplant/_lib"._parse_parameters_for_image_or_txt_search(text_or_img_or_options, moreOptions)
 	RightClick options
-end cliquerDroit
+end do_RightClick
 
-to attendre with texte_ou_image_ou_options, moreOptions:{}
-	set params to "steps/eggplant/_lib"._parser_parametres_recherche_txt_ou_img_waitfor(texte_ou_image_ou_options, moreOptions)
+to do_waitfor with text_or_img_or_options, moreOptions:{}
+	set params to "steps/eggplant/_lib"._parse_parameters_for_image_or_txt_search_waitfor(text_or_img_or_options, moreOptions)
 	waitfor the first item of params, the second item of params
 	// log "waitfor" &&  the first item of params &"," && the second item of params // DEBUG
-end attendre
+end do_waitfor
 
 to logFct 
 	// Goal: to log the entering / exiting of functions
@@ -68,7 +48,7 @@ to logFct
 		set param_stack to []
 	end if
 	
-	// build the string to dispplay
+	// build the string to display
 	set current_function to the Handler of the second-to-last item of the callStack 
 	
 	// Are we entering or leaving the function?
@@ -97,6 +77,50 @@ to logFct
 	end if
 end logFct
 
+to waitForAny listOfElementsToFind:[], maxWait:30
+	// Waits for any element in the list to be dislayed (text or images)
+	// N	o fancy options ➡️ if you need to use fancy option, then direcly use "waitfor"
+	// Examples: waitForAny ["my text", "path/to/my/reference_image", "another text"]
+	
+	// First, check that the parameters are correct
+	if listOfElementsToFind is not a list or maxWait is not a number then
+		Throw "Incorrect Parameter(s)", "waitForAny must receive a list and a number (max wait time); received this instead: " & newline & "listOfElementsToFind: " & listOfElementsToFind & newline & "maxWait: " & maxWait
+	end if
+	
+	// Then, try to find any of the element
+	set finalList to []
+
+	Repeat with each item myElement of listOfElementsToFind
+		set ocr_options to {}
+
+		// Is the element to find an image or a text?
+		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & myElement)
+		if file imgpath exists or file (imgpath & ".png") exists then
+			add properties {imageName:myElement} to ocr_options
+		else
+			add properties {text:myElement} to ocr_options
+		end if
+		
+		insert ocr_options into finalList
+	End repeat
+	
+	// log "waitfor" && maxWait &","&& finalList //DEBUG
+	waitfor maxWait, finalList
+end waitForAny
+
+to get_rectangle_between_2_elements topLeft_element:empty, bottomRightElement:empty
+	// This function draws a rectangle between top left of first element and bottom right of second element
+	// Each element can be a text or an image, but no fancy OCR options.
+	// If you need something fancier, use something else
+	
+	do_waitfor topLeft_element
+	set TL to FoundImageInfo().imageRectangle.topLeft
+	do_waitfor bottomRightElement
+	set BR to FoundImageInfo().imageRectangle.bottomRight
+	
+	return [TL, BR]
+end get_rectangle_between_2_elements
+
 // ==============================
 // TWEAKING STANDARD SENSETALK FUNCTIONS
 // ==============================
@@ -108,7 +132,7 @@ to click myparameters
 		send click myparameters to SenseTalk
 		// wait 0.5
 	Catch theException
-		throw theException
+		throw theException // Goal: make use of the extra stack info of the modified "Throw" function
 	End try
 end click
 
@@ -118,7 +142,7 @@ to RightClick myparameters
 		send RightClick myparameters to SenseTalk
 		// wait 0.5
 	Catch theException
-		throw theException
+		throw theException // Goal: make use of the extra stack info of the modified "Throw" function
 	End try
 end RightClick
 
@@ -127,24 +151,37 @@ to waitfor timeout, arguments
 		put "waitfor" && timeout & "," && arguments
 		send waitfor timeout, arguments to SenseTalk
 	Catch theException
-		throw theException
+		throw theException // Goal: make use of the extra stack info of the modified "Throw" function
 	End try
 end waitfor
 
-(*to ImageRectangle myparam
+to ImageRectangle myparam
+	// rewriting this function so that it has a default timeout of 30 seconds
 	set timeout to 30
+	
+	// myparam is either a property list, or the path of an image
+	if myparam is a property list then
+		add properties {waitfor:timeout} to myparam
+	else
+		set myparam to {imageName:myParam, waitfor:timeout}
+	end if
+	
 	Try
-		send waitfor timeout, myparam to SenseTalk // FIXME: use ImageFound instead; to be able to send a "waitfor". First, what parameters does the standard function receives? Must be the same
+		if not ImageFound(myParam) then
+			Throw "Image not found", myParam
+		end if
 		return FoundImageInfo().imageRectangle
 	Catch theException
 		throw theException
 	End try
 	
-end ImageRectangle*)
-
+end ImageRectangle
 
 
 to Throw with theException, thereason
+	// This is a rewrite of the standard "Throw" function,
+	// but it writes addisional callstack information in the error message
+	
 	set stk to the callStack
 	delete the last item of stk
 	set my_stack to "Call stack:" & newline
@@ -166,45 +203,12 @@ to Throw with theException, thereason
 	send throw theException, thereason to SenseTalk
 end Throw
 
-to waitForAny listOfElementsToFind:[], maxWait:30, optional_ocr_options:{}
-	// WIP
-	// Waits for any element in the list to be dislayed
-	
-	// First, check that the parameters are correct
-	if listOfElementsToFind is not a list or maxWait is not a number then
-		Throw "Incorrect Parameter(s)", "waitForAny must receive a list and a number (max wait time); received this instead: " & newline & "listOfElementsToFind: " & listOfElementsToFind & newline & "maxWait: " & maxWait
-	end if
-	
-	// Then, try to find any of the element
-	set finalList to []
-
-	Repeat with each item myElement of listOfElementsToFind
-		set ocr_options to {}
-
-		// Is the element to find an image or a text?
-		set imgpath to the resolvedfilePath of ( ResourcePath() & "/../Images/" & myElement)
-		if file imgpath exists or file (imgpath & ".png") exists then
-			add properties {imageName:myElement} to ocr_options
-		else
-			add properties {text:myElement} to ocr_options
-		end if
-		
-		add properties optional_ocr_options to ocr_options
-		
-		insert ocr_options into finalList
-	End repeat
-	
-	// log "waitfor" && maxWait &","&& finalList //DEBUG
-	waitfor maxWait, finalList
-	
-end waitForAny
-
 to ScrollWheelUp scrollAmount
 	send ScrollWheelUp scrollAmount to SenseTalk
-	wait 0.5    
+	wait 0.5 // short "hard wait" to give time to the UI to stop moving
 end ScrollWheelUp
 
 to ScrollWheelDown scrollAmount
 	send ScrollWheelDown scrollAmount to SenseTalk
-	wait 0.5    
+	wait 0.5 // short "hard wait" to give time to the UI to stop moving
 end ScrollWheelDown
