@@ -54,23 +54,47 @@ to logFct
 	// Are we entering or leaving the function?
 	set is_entering_function to (the last item of fct_stack is not current_function)
 	
+	
+	
+	
 	if is_entering_function then
 		set param_str to the params
 		delete param(0) from param_str
 		
+		// PREFIX
+		set identPrefix to ""
+		set nb_iterations to the number of items of fct_stack
+		Repeat nb_iterations times
+			set identPrefix to identPrefix && "|"
+		End repeat
+		if nb_iterations is greater than -1 then set identPrefix to identPrefix && "|⎻"
+		set prefix to identPrefix && "Entering function: "
+		// --------------
+		
 		if param_str is not << "">> then
-			log current_function && param_str && "..."
+			log prefix & current_function && param_str
 		else
-			log current_function && "..."
+			log prefix & current_function
 		end if
 		insert current_function into fct_stack
 		insert param_str into param_stack
 	else // we are leaving the function
 		set param_str to the last item of param_stack
+		
+		// PREFIX
+		set identPrefix to ""
+		set nb_iterations to the number of items of fct_stack
+		Repeat nb_iterations -1 times
+			set identPrefix to identPrefix && "|"
+		End repeat
+		if nb_iterations is greater than 0 then set identPrefix to identPrefix && "|_"
+		set prefix to identPrefix && "eXiting func (OK): "
+		// --------------
+		
 		if param_str is not << "">> then
-			logSuccess current_function && param_str && ": OK"
+			log prefix & current_function && param_str
 		else
-			logSuccess current_function & "OK"
+			log prefix & current_function & "OK"
 		end if
 		delete the last item of fct_stack
 		delete the last item of param_stack
@@ -185,6 +209,8 @@ to Throw with theException, thereason
 	set stk to the callStack
 	delete the last item of stk
 	set my_stack to "Call stack:" & newline
+	
+	set indent_spacer to ""
 	Repeat with each item stk_element of stk
 		if the repeatIndex is 1 then
 			set my_stack to my_stack & stk_element.Handler & ".script"
@@ -192,10 +218,12 @@ to Throw with theException, thereason
 			set scriptName to stk_element.ScriptObjectID
 			delete "<SOURCE>" from scriptName
 			delete "<SELECTION>" from scriptName
-			set my_stack to my_stack & newline & scriptName & " > " & stk_element.Handler
+			set my_stack to my_stack & newline & indent_spacer & scriptName & " > " & stk_element.Handler
 		end if
 		
 		set my_stack to my_stack && "(script line " & stk_element.ScriptLine &" ; function line " && stk_element.line & ")"
+		
+		set indent_spacer to indent_spacer & "   "
 	End repeat
 	
 	set thereason to thereason & newline & newline & my_stack
