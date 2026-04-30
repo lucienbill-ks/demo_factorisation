@@ -1,3 +1,4 @@
+!!! OBSOLETE, please use this instead -> https://github.com/lucienbill-ks/talk_metier_dans_tests/tree/main/02-framework.suite
 # Lucien's demo framework for Eggplant (SenseTalk)
 
 ## English version
